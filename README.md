@@ -215,11 +215,24 @@ The client disables ambient proxies and redirects, requires TLS 1.2 or newer for
 
 Private, loopback, link-local, multicast, and unspecified HTTP/TLS targets are blocked by the generic network tools by default. Prometheus and Loki use explicitly configured trusted endpoints and do not accept URLs from tool arguments.
 
+## Community
+
+- Read [CONTRIBUTING.md](CONTRIBUTING.md) before proposing a non-trivial change.
+- Follow [SECURITY.md](SECURITY.md) for private vulnerability reports; do not disclose security details in a public issue.
+- Participation is governed by [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+- Coding agents must follow [AGENTS.md](AGENTS.md) and the assigned issue.
+- Public bugs and feature requests should use the repository issue forms.
+
 ## Roadmap
 
-1. MCP client support and richer Agent skill packaging.
-2. PostgreSQL task state and VikingDB retrieval.
-3. Approval gates and policy evaluation for state-changing operations.
-4. AgentKit/VKE deployment and production evaluation.
+The authoritative development sequence is maintained in [docs/development-roadmap.md](docs/development-roadmap.md), [docs/v0.1-scope.md](docs/v0.1-scope.md), and the [Vardiel v0.1 tracking issue](https://github.com/Nesoriel/vardiel/issues/22).
 
-See [`docs/architecture.md`](docs/architecture.md) for the initial boundaries.
+The immediate sequence is:
+
+1. safe public error boundary;
+2. Tool Contract v2;
+3. evidence records and local case bundles;
+4. Linux host diagnostics, analyzers, typed plans, and built-in playbooks;
+5. model portability and `v0.1.0` release preparation.
+
+See [docs/architecture.md](docs/architecture.md) for current boundaries. Roadmap entries are plans, not implemented capabilities.

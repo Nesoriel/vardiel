@@ -1,44 +1,52 @@
 ## Summary
 
-<!-- What problem does this pull request solve? -->
+<!-- What user or maintainer problem does this pull request solve? -->
 
 ## Linked issue
 
 Closes #
 
+## Change type
+
+- [ ] Bug fix
+- [ ] Feature
+- [ ] Security hardening
+- [ ] Documentation or contributor experience
+- [ ] Tests, build, or CI
+- [ ] Refactor with no intended behavior change
+
 ## Scope
 
-<!-- List the exact implemented changes. -->
+<!-- Exact implemented changes. -->
 
 ## Explicit non-goals
 
-<!-- State what this pull request intentionally does not change. -->
+<!-- What this pull request intentionally does not change. -->
 
-## Architecture impact
+## Architecture and public contracts
 
-<!-- Affected packages, contracts, ownership boundaries, or ADRs. -->
+<!-- Affected packages, ADRs, CLI, JSON, MCP, environment variables, schemas, reports, or compatibility. Write "none" with a reason when applicable. -->
 
 ## Security and privacy impact
 
-<!-- Address model-controlled input, shell/code execution, SSRF, credentials, raw errors, logs, output projection, telemetry, timeouts, and bounds. Write "none" only with a reason. -->
+<!-- Discuss model-controlled input, shell/code execution, SSRF, credentials, raw errors, logs, output projection, telemetry, permissions, timeouts, and bounds. -->
 
-- [ ] No arbitrary shell or model-generated code execution was introduced.
-- [ ] Read-only and mutation annotations remain truthful.
-- [ ] Public errors and outputs do not expose raw infrastructure or provider data.
-- [ ] Existing SSRF, redirect, TLS, endpoint, size, count, timeout, and redaction boundaries were preserved.
-- [ ] Secret/path/token/prompt-injection regression cases were considered.
+- [ ] This change does not add arbitrary model-controlled shell or code execution.
+- [ ] Tool and protocol metadata remain truthful.
+- [ ] This change does not introduce a new raw-error, credential, path, token, or sensitive-output disclosure path.
+- [ ] Existing SSRF, redirect, TLS, endpoint, size, count, timeout, cancellation, and redaction boundaries are preserved.
+- [ ] Relevant attacker-controlled strings and failure paths are tested.
+- [ ] Known pre-existing limitations are linked rather than presented as fixed.
 
-## Public contract and migration impact
-
-<!-- CLI, environment variables, JSON schema, MCP metadata, case schema, binary names, or compatibility. -->
+Explain any unchecked item or mark it not applicable with a reason.
 
 ## Tests
 
-<!-- New and changed tests, including failure and privacy paths. -->
+<!-- New and changed tests, including unhealthy-state, failure, boundary, cancellation, privacy, and deterministic-output cases. -->
 
 ## Validation
 
-<!-- Paste the exact commands run and concise results. Do not claim unexecuted checks. -->
+<!-- Paste only commands actually run and concise results. State why any expected check was skipped. -->
 
 ```text
 go mod tidy
@@ -58,19 +66,32 @@ go build ./cmd/vardiel
 
 ## Evidence and output examples
 
-<!-- For behavior changes, include sanitized representative JSON or report output. -->
+<!-- For behavior changes, include sanitized representative JSON, CLI, MCP, or report output. -->
+
+## AI-assisted development
+
+- [ ] No material AI assistance was used.
+- [ ] AI tools materially assisted this change.
+
+Tools used:
+
+Human review and verification performed:
+
+<!-- Do not include private prompts, chain-of-thought, credentials, or sensitive repository data. -->
+
+## Migration, rollout, and rollback
+
+<!-- Required for breaking, deployment, persistence, or mutation-related changes. Otherwise explain why not applicable. -->
 
 ## Unresolved risks or uncertainty
 
-<!-- State remaining limitations, follow-up issues, or "none identified" with justification. -->
+<!-- Remaining limitations, unverified assumptions, follow-up issues, or "none identified" with justification. -->
 
 ## Review checklist
 
-- [ ] I read `AGENTS.md` and the accepted identity ADR.
+- [ ] I read `CONTRIBUTING.md` and the applicable `AGENTS.md`.
 - [ ] The pull request addresses one focused issue.
 - [ ] Unrelated formatting, dependency, naming, and refactor changes are excluded.
-- [ ] Tool names and arguments are validated in code.
-- [ ] Execution success is not confused with observed system health.
-- [ ] Findings and conclusions cite evidence IDs where applicable.
-- [ ] Documentation and examples match implemented behavior.
-- [ ] Roadmap items are not described as already implemented.
+- [ ] Documentation and examples distinguish current behavior from roadmap work.
+- [ ] I reviewed generated changes and source attribution.
+- [ ] I did not commit secrets, production data, binaries, coverage output, or local configuration.

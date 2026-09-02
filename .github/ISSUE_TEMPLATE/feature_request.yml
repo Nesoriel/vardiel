@@ -1,0 +1,81 @@
+name: Feature request
+description: Propose a focused improvement to Vardiel
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the user problem before prescribing an implementation. Search existing issues and the roadmap first.
+
+        Vardiel owns diagnostic orchestration, evidence, analyzers, bounded tools, model adapters, CLI, and MCP. Host inventory and scheduling belong to Astralith; controller-driven Kubernetes remediation belongs to Kube-Sentinel.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues and the current roadmap.
+          required: true
+        - label: This request does not contain credentials or private infrastructure data.
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user workflow is difficult or impossible today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe observable behavior and a useful acceptance example.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Proposed ownership area
+      options:
+        - Diagnostic orchestration, evidence, or reports
+        - Tool contract or bounded diagnostic tool
+        - Deterministic analyzer or playbook
+        - Model adapter
+        - CLI
+        - MCP or external integration
+        - Security, privacy, or policy
+        - Documentation and contributor experience
+        - Unsure
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing commands, tools, or workflows you tried.
+
+  - type: textarea
+    id: safety
+    attributes:
+      label: Security and privacy considerations
+      description: Explain required credentials, target systems, mutation risk, data sensitivity, and necessary bounds.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Suggested scope and non-goals
+      description: Keep the first increment reviewable and identify what should remain out of scope.
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to help refine the issue.
+        - label: I may be able to submit a pull request after scope is accepted.

@@ -1,0 +1,92 @@
+name: Bug report
+description: Report a reproducible problem in Vardiel
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug. Search existing issues first.
+
+        **Do not disclose a security vulnerability, credential, private hostname, kubeconfig, authorization header, or sensitive log here.** Use the security reporting process instead: https://github.com/Nesoriel/vardiel/security/policy
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues and did not find the same problem.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true
+        - label: I removed credentials and private infrastructure data from this report.
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - CLI and configuration
+        - Agent Runtime or model adapter
+        - MCP server
+        - DNS, HTTP, or TLS diagnostics
+        - Docker diagnostics
+        - Kubernetes diagnostics
+        - Prometheus diagnostics
+        - Loki diagnostics
+        - Telemetry
+        - Build, test, or documentation
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: revision
+    attributes:
+      label: Version or commit
+      description: Provide a tag or commit SHA. Use `vardiel version` and `git rev-parse HEAD` when applicable.
+      placeholder: v0.x.y or 1816723...
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, architecture, Go version, and relevant deployment mode.
+      placeholder: Debian 13 amd64, Go 1.26.5, local CLI
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest deterministic sequence that reproduces the problem.
+      placeholder: |
+        1. Configure ...
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include sanitized output only. Preserve stable error codes when present.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Include minimal sanitized configuration, screenshots, or related issues. State whether the problem is intermittent.

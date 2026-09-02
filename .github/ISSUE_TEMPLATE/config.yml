@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Nesoriel/vardiel/security/policy
+    about: Do not disclose vulnerability details in a public issue. Follow the private reporting policy.
+  - name: Contribution guide
+    url: https://github.com/Nesoriel/vardiel/blob/main/CONTRIBUTING.md
+    about: Read the contribution workflow before proposing a non-trivial change.
