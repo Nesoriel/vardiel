@@ -8,7 +8,7 @@ This root file applies to the entire repository. A more deeply nested `AGENTS.md
 
 Use this precedence when repository instructions differ:
 
-1. the explicit task and assigned GitHub issue define the requested outcome and scope;
+1. the maintainer's explicit instruction and the assigned GitHub issue define the requested outcome, scope, delivery branch, and merge authority;
 2. the nearest applicable `AGENTS.md` defines implementation constraints;
 3. accepted ADRs and `docs/architecture.md` define architectural boundaries;
 4. `CONTRIBUTING.md` defines the shared contributor workflow;
@@ -31,18 +31,69 @@ collect structured evidence
 
 Vardiel is the independent continuation of OpsPilot and is not a fork of Netiarius. Reference projects may inform design, but their source must not be copied without an explicit, license-compatible decision.
 
+## Maintainer and coding-agent roles
+
+The maintainer owns product direction, priorities, issue scope, architecture and security decisions, resolution of material ambiguity, and final merge authorization when a gate is required.
+
+For an accepted task, the coding agent owns the normal mechanical delivery lifecycle by default: repository inspection, task-branch preparation, implementation, tests, focused commits, pushes, pull-request creation and updates, CI follow-up, and review-response commits. The maintainer should not need to perform routine Git operations merely to let the agent continue.
+
+Passing CI does not let an agent self-authorize a merge. Merge authority must come from an explicit maintainer instruction in the current task, issue, or pull-request conversation.
+
 ## Required preflight
 
 Before editing:
 
-1. confirm the task branch and do not work on `main`;
+1. inspect the current branch, worktree status, remotes, and upstream relationship;
 2. read the assigned issue in full;
 3. read this file, `CONTRIBUTING.md`, the relevant ADRs, and the affected architecture sections;
 4. inspect the current implementation, tests, public examples, and known follow-up issues;
 5. state a concise plan, affected contracts, and safety boundaries;
-6. verify unstable SDK, protocol, and platform facts against official primary sources.
+6. verify unstable SDK, protocol, and platform facts against official primary sources;
+7. align the worktree to the task branch using the authority and safeguards below.
 
-Work on the branch supplied by the maintainer. Do not create, switch, rename, delete, or force-update branches; create tags or releases; change remotes; or modify repository settings unless the assigned issue explicitly authorizes that operation.
+## Task-branch and delivery authority
+
+A named branch in the maintainer instruction or assigned issue is authorization to use that branch. No second permission prompt is required for routine alignment.
+
+For the assigned task, the coding agent may:
+
+- fetch current refs from `origin`;
+- switch to the named existing local task branch;
+- create a local tracking branch when the named `origin/<task-branch>` already exists;
+- create the named task branch from current `origin/main` when it does not yet exist locally or remotely;
+- derive a conventional task branch when no name is supplied, using `<type>/<issue-number>-<short-slug>` where practical;
+- fast-forward a task branch that has no divergent work;
+- rebase the agent's own unpushed local commits onto current `origin/main` before the first push;
+- commit focused logical changes and amend only the agent's own unpushed latest commit;
+- push the task branch and set its upstream;
+- open and update a draft pull request linked to the issue;
+- monitor required checks, inspect failures, fix the task branch, and push follow-up commits;
+- mark the pull request ready after scope and validation are complete;
+- respond to review feedback with additional commits;
+- merge the pull request and delete only its own task branch when the maintainer explicitly authorizes merge and all repository gates pass.
+
+Before switching, creating, rebasing, or updating a branch, verify that no unknown work will be lost. Stop and report the exact condition when:
+
+- the worktree contains unrelated or unrecognized changes;
+- the current branch contains commits whose ownership or destination is unclear;
+- local and remote task-branch history have diverged after publication or review;
+- checkout, rebase, or update would overwrite files;
+- a merge conflict requires product, architecture, or security judgment;
+- required credentials or permissions are unavailable.
+
+A named safety stash is allowed only for changes clearly created by the same agent for the same assigned task. Record it, restore it promptly, and do not leave hidden work at handoff. Never stash, discard, or overwrite unrecognized user work.
+
+The coding agent must not:
+
+- commit or push directly to `main`;
+- use a GitHub App, integration, administrator, or ruleset bypass to avoid the pull-request and required-check flow;
+- force-push or rewrite a published or reviewed branch unless the maintainer explicitly authorizes that exact operation and reason;
+- use `git reset --hard`, `git clean`, or another destructive command on unknown work;
+- change remotes, repository settings, rulesets, access controls, tags, or releases unless the assigned task explicitly requires it;
+- delete, rename, or rewrite unrelated branches;
+- merge merely because checks pass, without explicit merge authorization.
+
+After a pull request is open, prefer non-destructive follow-up commits. If the base branch advances, merge or otherwise update it without erasing review history; ask before any operation that would require a force-push.
 
 ## Change discipline
 
@@ -51,7 +102,7 @@ Work on the branch supplied by the maintainer. Do not create, switch, rename, de
 - Do not add compatibility layers without a documented user or integration need.
 - Preserve public contracts unless the issue explicitly authorizes a breaking change.
 - Update documentation, examples, schemas, and migration notes when public behavior changes.
-- Prefer small, reviewable commits. Never rewrite shared history or force-push.
+- Prefer small, reviewable commits. Do not rewrite shared history.
 - Do not commit credentials, `.env` files, local case data, coverage output, binaries, editor state, or production configuration.
 - Do not describe roadmap work as implemented behavior.
 
@@ -132,25 +183,28 @@ go build ./cmd/vardiel
 
 Do not claim a command passed unless it was actually executed. If a check cannot run, state exactly why and what remains unverified.
 
-## GitHub and pull request behavior
+## Pull-request and merge behavior
 
-- Never push directly to `main`, even when an integration token has a technical ruleset bypass.
 - Open one pull request linked to the assigned issue and use `.github/pull_request_template.md`.
-- Keep a pull request in draft until scope and tests are complete.
-- Do not enable auto-merge or merge security-sensitive work without human review.
-- Address review comments with additional commits; do not erase review context by rewriting shared history.
-- Re-run affected tests after review changes.
-- Do not approve your own work or present automated analysis as independent human review.
+- The coding agent should create the pull request as draft early enough to preserve CI and review context, then keep its body current.
+- Keep the pull request in draft until implementation, documentation, and required validation are complete.
+- Do not present automated analysis as independent human review or approve your own work.
+- Address review comments with additional commits and re-run affected tests.
+- Mark the pull request ready when it meets the issue acceptance criteria.
+- Without explicit merge authorization, stop at a review-ready pull request and hand control back to the maintainer.
+- With explicit merge authorization, wait for required checks and thread resolution, merge through the protected pull-request path, verify the resulting state, and delete only the completed task branch when appropriate.
 
 ## Completion handoff
 
-The final handoff and pull request description must include:
+The final handoff and pull-request description must include:
 
 - implemented behavior and explicit non-goals;
 - files and public contracts changed;
 - security, privacy, and compatibility impact;
 - tests added or updated;
 - exact validation commands and concise results;
-- skipped checks, unresolved uncertainty, and follow-up issues.
+- commits pushed, pull-request state, and CI status;
+- skipped checks, unresolved uncertainty, and follow-up issues;
+- the source of merge authorization, or a clear statement that the pull request is awaiting maintainer review.
 
 Human contribution and conduct guidance lives in `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md`. Vulnerabilities must follow `SECURITY.md`.

@@ -22,6 +22,19 @@ assignees: ""
 
 <!-- Issues or pull requests that must be merged first. -->
 
+## Delivery configuration
+
+<!-- A branch name is optional. When omitted, Codex may derive <type>/<issue-number>-<short-slug> from this issue. -->
+
+Task branch:
+
+Merge authorization:
+
+- [x] Codex may prepare or create the task branch, commit, push, open/update a draft pull request, handle CI, and mark it ready.
+- [ ] Codex may merge after all repository gates pass. This box must be checked by a maintainer, or equivalent authorization must be recorded in a later maintainer comment.
+
+Routine task delivery follows `AGENTS.md` and does not require a separate permission prompt for each branch, commit, push, or pull-request action. Direct `main` pushes and ruleset bypass remain prohibited.
+
 ## In scope
 
 -
@@ -39,7 +52,7 @@ assignees: ""
 - Read `AGENTS.md`, `CONTRIBUTING.md`, and the relevant ADRs.
 - Preserve provider-neutral boundaries in `internal/agent`.
 - Keep the task within Vardiel's responsibilities; do not duplicate Astralith or Kube-Sentinel.
-- Work on the maintainer-supplied branch and never push directly to `main`.
+- Use one focused task branch and never commit or push directly to `main`.
 
 ## Security and privacy invariants
 
@@ -92,4 +105,5 @@ go build ./cmd/vardiel
 - documentation or ADR updates when contracts change;
 - one focused pull request linked to this issue;
 - exact validation results and skipped checks;
-- concise AI-assistance and human-verification statement.
+- concise AI-assistance and human-verification statement;
+- final branch, commit, pull-request, CI, and merge-status handoff.
