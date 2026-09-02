@@ -2,7 +2,7 @@
 
 This roadmap defines capability boundaries and sequencing. It is not permission to implement several milestones in one pull request. Every item requires a focused GitHub issue and review.
 
-## Current baseline: OpsPilot
+## Current baseline: Vardiel
 
 The preserved baseline already provides:
 
@@ -25,7 +25,7 @@ Goal: deliver a safe daily-use local diagnostic agent and a credible course-proj
 
 ### Foundation
 
-- complete behavior-preserving rename from OpsPilot to Vardiel
+- complete behavior-preserving Vardiel identity migration
 - establish a unified safe public error boundary
 - refresh dependencies in isolated dependency-family pull requests
 - introduce Tool Contract v2 with input/output schemas and truthful annotations

@@ -13,24 +13,24 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
-	"github.com/Nesoriel/opspilot/internal/dockerapi"
-	"github.com/Nesoriel/opspilot/internal/kubeapi"
-	"github.com/Nesoriel/opspilot/internal/lokiapi"
-	arkmodel "github.com/Nesoriel/opspilot/internal/models/ark"
-	"github.com/Nesoriel/opspilot/internal/promapi"
-	"github.com/Nesoriel/opspilot/internal/tools/dnslookup"
-	"github.com/Nesoriel/opspilot/internal/tools/dockerdiag"
-	"github.com/Nesoriel/opspilot/internal/tools/httpprobe"
-	"github.com/Nesoriel/opspilot/internal/tools/kubediag"
-	"github.com/Nesoriel/opspilot/internal/tools/lokidiag"
-	"github.com/Nesoriel/opspilot/internal/tools/promdiag"
-	"github.com/Nesoriel/opspilot/internal/tools/tlsinspect"
+	"github.com/Nesoriel/vardiel/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/dockerapi"
+	"github.com/Nesoriel/vardiel/internal/kubeapi"
+	"github.com/Nesoriel/vardiel/internal/lokiapi"
+	arkmodel "github.com/Nesoriel/vardiel/internal/models/ark"
+	"github.com/Nesoriel/vardiel/internal/promapi"
+	"github.com/Nesoriel/vardiel/internal/tools/dnslookup"
+	"github.com/Nesoriel/vardiel/internal/tools/dockerdiag"
+	"github.com/Nesoriel/vardiel/internal/tools/httpprobe"
+	"github.com/Nesoriel/vardiel/internal/tools/kubediag"
+	"github.com/Nesoriel/vardiel/internal/tools/lokidiag"
+	"github.com/Nesoriel/vardiel/internal/tools/promdiag"
+	"github.com/Nesoriel/vardiel/internal/tools/tlsinspect"
 )
 
 var version = "dev"
 
-const defaultSystemPrompt = `You are OpsPilot, a safety-oriented operations diagnostic agent. Use read-only tools to collect evidence before making claims. Clearly separate observed evidence, inference, and uncertainty. Never invent tool results.`
+const defaultSystemPrompt = `You are Vardiel, a safety-oriented operations diagnostic agent. Use read-only tools to collect evidence before making claims. Clearly separate observed evidence, inference, and uncertainty. Never invent tool results.`
 
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -51,7 +51,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 
 	switch args[0] {
 	case "version":
-		return writeJSON(stdout, map[string]any{"name": "opspilot", "version": version})
+		return writeJSON(stdout, map[string]any{"name": "vardiel", "version": version})
 	case "tool":
 		return runTool(ctx, args[1:], stdout, stderr)
 	case "agent":
@@ -100,7 +100,7 @@ func runAgent(ctx context.Context, args []string, stdout, stderr io.Writer) erro
 		return err
 	}
 
-	systemPrompt := strings.TrimSpace(os.Getenv("OPSPILOT_SYSTEM_PROMPT"))
+	systemPrompt := strings.TrimSpace(os.Getenv("VARDIEL_SYSTEM_PROMPT"))
 	if systemPrompt == "" {
 		systemPrompt = defaultSystemPrompt
 	}
@@ -168,37 +168,37 @@ func runTool(ctx context.Context, args []string, stdout, stderr io.Writer) error
 }
 
 func buildRegistry() (*agent.Registry, error) {
-	allowHTTPPrivate, _ := strconv.ParseBool(os.Getenv("OPSPILOT_HTTP_ALLOW_PRIVATE"))
-	allowTLSPrivate, _ := strconv.ParseBool(os.Getenv("OPSPILOT_TLS_ALLOW_PRIVATE"))
-	allowPrometheusHTTP, _ := strconv.ParseBool(os.Getenv("OPSPILOT_PROMETHEUS_ALLOW_HTTP"))
-	allowLokiHTTP, _ := strconv.ParseBool(os.Getenv("OPSPILOT_LOKI_ALLOW_HTTP"))
+	allowHTTPPrivate, _ := strconv.ParseBool(os.Getenv("VARDIEL_HTTP_ALLOW_PRIVATE"))
+	allowTLSPrivate, _ := strconv.ParseBool(os.Getenv("VARDIEL_TLS_ALLOW_PRIVATE"))
+	allowPrometheusHTTP, _ := strconv.ParseBool(os.Getenv("VARDIEL_PROMETHEUS_ALLOW_HTTP"))
+	allowLokiHTTP, _ := strconv.ParseBool(os.Getenv("VARDIEL_LOKI_ALLOW_HTTP"))
 	dockerClient, err := dockerapi.New(dockerapi.Config{
-		SocketPath: os.Getenv("OPSPILOT_DOCKER_SOCKET"),
+		SocketPath: os.Getenv("VARDIEL_DOCKER_SOCKET"),
 		Timeout:    5 * time.Second,
 	})
 	if err != nil {
 		return nil, err
 	}
 	kubernetesClient := kubeapi.New(kubeapi.Config{
-		KubeconfigPath: os.Getenv("OPSPILOT_KUBECONFIG"),
-		Context:        os.Getenv("OPSPILOT_KUBERNETES_CONTEXT"),
+		KubeconfigPath: os.Getenv("VARDIEL_KUBECONFIG"),
+		Context:        os.Getenv("VARDIEL_KUBERNETES_CONTEXT"),
 		Timeout:        10 * time.Second,
 		QPS:            5,
 		Burst:          10,
 	})
 	prometheusClient := promapi.New(promapi.Config{
-		BaseURL:          os.Getenv("OPSPILOT_PROMETHEUS_URL"),
+		BaseURL:          os.Getenv("VARDIEL_PROMETHEUS_URL"),
 		AllowHTTP:        allowPrometheusHTTP,
-		BearerTokenFile:  os.Getenv("OPSPILOT_PROMETHEUS_BEARER_TOKEN_FILE"),
+		BearerTokenFile:  os.Getenv("VARDIEL_PROMETHEUS_BEARER_TOKEN_FILE"),
 		Timeout:          8 * time.Second,
 		QueryTimeout:     5 * time.Second,
 		MaxResponseBytes: 4 << 20,
 	})
 	lokiClient := lokiapi.New(lokiapi.Config{
-		BaseURL:          os.Getenv("OPSPILOT_LOKI_URL"),
+		BaseURL:          os.Getenv("VARDIEL_LOKI_URL"),
 		AllowHTTP:        allowLokiHTTP,
-		BearerTokenFile:  os.Getenv("OPSPILOT_LOKI_BEARER_TOKEN_FILE"),
-		TenantID:         os.Getenv("OPSPILOT_LOKI_TENANT_ID"),
+		BearerTokenFile:  os.Getenv("VARDIEL_LOKI_BEARER_TOKEN_FILE"),
+		TenantID:         os.Getenv("VARDIEL_LOKI_TENANT_ID"),
 		Timeout:          8 * time.Second,
 		MaxResponseBytes: 4 << 20,
 	})
@@ -235,7 +235,7 @@ func buildRegistry() (*agent.Registry, error) {
 
 func reportCommandError(args []string, stdout, stderr io.Writer, err error) {
 	if isMCPCommand(args) {
-		fmt.Fprintf(stderr, "opspilot: %v\n", err)
+		fmt.Fprintf(stderr, "vardiel: %v\n", err)
 		return
 	}
 	_ = writeJSON(stdout, map[string]any{"ok": false, "error": err.Error()})
@@ -248,13 +248,13 @@ func writeJSON(writer io.Writer, value any) error {
 }
 
 func printUsage(writer io.Writer) {
-	fmt.Fprintln(writer, "usage: opspilot <version|tool|agent|mcp>")
+	fmt.Fprintln(writer, "usage: vardiel <version|tool|agent|mcp>")
 }
 
 func printToolUsage(writer io.Writer) {
-	fmt.Fprintln(writer, "usage: opspilot tool <list|run TOOL [JSON]>")
+	fmt.Fprintln(writer, "usage: vardiel tool <list|run TOOL [JSON]>")
 }
 
 func printAgentUsage(writer io.Writer) {
-	fmt.Fprintln(writer, "usage: opspilot agent run [--events=jsonl] PROMPT")
+	fmt.Fprintln(writer, "usage: vardiel agent run [--events=jsonl] PROMPT")
 }

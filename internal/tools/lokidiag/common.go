@@ -7,7 +7,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/Nesoriel/opspilot/internal/lokiapi"
+	"github.com/Nesoriel/vardiel/internal/lokiapi"
 )
 
 type Client interface {

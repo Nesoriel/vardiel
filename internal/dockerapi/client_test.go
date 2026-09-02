@@ -17,6 +17,9 @@ import (
 func TestClientNegotiatesVersionAndMapsEngineInfo(t *testing.T) {
 	var versionCalls atomic.Int32
 	socketPath := startUnixHTTPServer(t, http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.Header.Get("User-Agent") != "vardiel/docker-readonly" {
+			t.Errorf("unexpected user agent: %q", request.Header.Get("User-Agent"))
+		}
 		switch request.URL.Path {
 		case "/version":
 			versionCalls.Add(1)

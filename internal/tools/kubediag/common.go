@@ -8,7 +8,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/Nesoriel/opspilot/internal/kubeapi"
+	"github.com/Nesoriel/vardiel/internal/kubeapi"
 	"k8s.io/apimachinery/pkg/util/validation"
 )
 

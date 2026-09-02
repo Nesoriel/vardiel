@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/Nesoriel/opspilot/internal/promapi"
+	"github.com/Nesoriel/vardiel/internal/promapi"
 )
 
 type Client interface {

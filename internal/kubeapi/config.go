@@ -156,7 +156,7 @@ func hardenRESTConfig(restConfig *rest.Config, config Config) error {
 	restConfig.Timeout = config.Timeout
 	restConfig.QPS = config.QPS
 	restConfig.Burst = config.Burst
-	restConfig.UserAgent = "opspilot/kubernetes-readonly"
+	restConfig.UserAgent = "vardiel/kubernetes-readonly"
 	restConfig.Proxy = func(*http.Request) (*url.URL, error) { return nil, nil }
 	return nil
 }

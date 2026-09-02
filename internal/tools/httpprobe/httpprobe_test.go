@@ -12,6 +12,9 @@ import (
 
 func TestProbeAllowsPrivateWhenConfigured(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		if request.Header.Get("User-Agent") != "vardiel/0.1" {
+			t.Errorf("unexpected user agent: %q", request.Header.Get("User-Agent"))
+		}
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusNoContent)
 	}))

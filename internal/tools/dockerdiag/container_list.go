@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
-	"github.com/Nesoriel/opspilot/internal/dockerapi"
+	"github.com/Nesoriel/vardiel/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/dockerapi"
 )
 
 const (

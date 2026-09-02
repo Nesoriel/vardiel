@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
-	"github.com/Nesoriel/opspilot/internal/kubeapi"
+	"github.com/Nesoriel/vardiel/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/kubeapi"
 )
 
 type fakeClient struct {

@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/agent"
 )
 
 type JSONLObserver struct {

@@ -4,7 +4,7 @@
 
 Vardiel is the independent continuation of OpsPilot: a Go-first, evidence-driven operations diagnostic agent for personal servers, homelabs, and small infrastructure environments.
 
-The repository may still be named `opspilot` during the identity-migration task. Do not mix the mechanical rename with feature work. The identity decision is recorded in `docs/adr/0001-vardiel-project-identity.md`.
+The identity migration is a dedicated task. Do not mix the mechanical rename with feature work. The identity decision is recorded in `docs/adr/0001-vardiel-project-identity.md`.
 
 Vardiel is not a fork of Netiarius. Netiarius may be studied only as a design reference for planning, playbooks, diagnosis/repair/validation flow, and human approval. Do not copy its source code or adopt arbitrary model-generated Python execution.
 
@@ -114,7 +114,7 @@ go test -race -coverprofile=coverage.out ./...
 go build ./cmd/vardiel
 ```
 
-During the rename task, `./cmd/opspilot` remains the expected build path until the rename commit changes it.
+The expected build path is `./cmd/vardiel`.
 
 For documentation-only pull requests, still run the applicable repository tests or explicitly explain why execution was unavailable.
 

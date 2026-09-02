@@ -27,7 +27,7 @@ func TestClientMapsServerAndRedactedStreams(t *testing.T) {
 		if request.Header.Get("X-Scope-OrgID") != "operations" {
 			t.Errorf("unexpected tenant header: %q", request.Header.Get("X-Scope-OrgID"))
 		}
-		if request.Header.Get("User-Agent") != "opspilot/loki-readonly" {
+		if request.Header.Get("User-Agent") != "vardiel/loki-readonly" {
 			t.Errorf("unexpected user agent: %q", request.Header.Get("User-Agent"))
 		}
 		switch request.URL.Path {

@@ -122,7 +122,7 @@ func (c *Client) getJSON(ctx context.Context, versioned bool, apiVersion, path s
 		return fmt.Errorf("docker_request_invalid: create request: %w", err)
 	}
 	request.Header.Set("Accept", "application/json")
-	request.Header.Set("User-Agent", "opspilot/docker-readonly")
+	request.Header.Set("User-Agent", "vardiel/docker-readonly")
 
 	response, err := c.httpClient.Do(request)
 	if err != nil {

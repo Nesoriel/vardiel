@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/agent"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
@@ -56,20 +56,20 @@ func (o *TraceObserver) Observe(ctx context.Context, event agent.Event) {
 	case agent.EventRunStarted:
 		runCtx, span := o.tracer.Start(
 			ctx,
-			"opspilot.agent.run",
+			"vardiel.agent.run",
 			trace.WithTimestamp(event.Timestamp),
-			trace.WithAttributes(attribute.String("opspilot.run.id", event.RunID)),
+			trace.WithAttributes(attribute.String("vardiel.run.id", event.RunID)),
 		)
 		o.runs[event.RunID] = spanState{ctx: runCtx, span: span}
 	case agent.EventModelStarted:
 		parent := o.parentContext(ctx, event.RunID)
 		_, span := o.tracer.Start(
 			parent,
-			"opspilot.model.generate",
+			"vardiel.model.generate",
 			trace.WithTimestamp(event.Timestamp),
 			trace.WithAttributes(
-				attribute.String("opspilot.run.id", event.RunID),
-				attribute.Int("opspilot.step", event.Step),
+				attribute.String("vardiel.run.id", event.RunID),
+				attribute.Int("vardiel.step", event.Step),
 			),
 		)
 		o.models[modelSpanKey{runID: event.RunID, step: event.Step}] = span
@@ -83,13 +83,13 @@ func (o *TraceObserver) Observe(ctx context.Context, event agent.Event) {
 		parent := o.parentContext(ctx, event.RunID)
 		_, span := o.tracer.Start(
 			parent,
-			"opspilot.tool.execute",
+			"vardiel.tool.execute",
 			trace.WithTimestamp(event.Timestamp),
 			trace.WithAttributes(
-				attribute.String("opspilot.run.id", event.RunID),
-				attribute.Int("opspilot.step", event.Step),
-				attribute.String("opspilot.tool.name", event.ToolName),
-				attribute.String("opspilot.tool.call_id", event.ToolCallID),
+				attribute.String("vardiel.run.id", event.RunID),
+				attribute.Int("vardiel.step", event.Step),
+				attribute.String("vardiel.tool.name", event.ToolName),
+				attribute.String("vardiel.tool.call_id", event.ToolCallID),
 			),
 		)
 		o.tools[toolSpanKey{runID: event.RunID, step: event.Step, callID: event.ToolCallID}] = span
@@ -131,7 +131,7 @@ func (o *TraceObserver) cleanupRun(runID string, timestamp time.Time) {
 }
 
 func finishSpan(span trace.Span, event agent.Event) {
-	span.SetAttributes(attribute.Int64("opspilot.duration_ms", event.Duration.Milliseconds()))
+	span.SetAttributes(attribute.Int64("vardiel.duration_ms", event.Duration.Milliseconds()))
 	if code := errorCode(event.Err); code != "" {
 		span.SetAttributes(attribute.String("error.type", code))
 		span.SetStatus(codes.Error, code)

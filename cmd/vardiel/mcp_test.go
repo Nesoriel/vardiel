@@ -14,7 +14,7 @@ func TestRunMCPRequiresStdioSubcommand(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "stdio") {
 		t.Fatalf("expected stdio command error, got %v", err)
 	}
-	if !strings.Contains(stderr.String(), "opspilot mcp stdio") {
+	if !strings.Contains(stderr.String(), "vardiel mcp stdio") {
 		t.Fatalf("missing MCP usage: %s", stderr.String())
 	}
 }

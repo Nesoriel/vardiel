@@ -112,7 +112,7 @@ go test -race -coverprofile=coverage.out ./...
 go build ./cmd/vardiel
 ```
 
-During the identity-migration task, the build path changes from `./cmd/opspilot` to `./cmd/vardiel`. Use the path appropriate to the commit under test.
+The expected build path is `./cmd/vardiel`.
 
 Also run focused package tests while iterating. Full validation is still required before requesting review.
 
@@ -145,7 +145,7 @@ A pull request description must distinguish implemented behavior from future roa
 
 The intended initial sequence is:
 
-1. behavior-preserving OpsPilot-to-Vardiel rename
+1. behavior-preserving Vardiel project-identity migration
 2. safe public error boundary
 3. Tool Contract v2
 4. evidence and local case bundle

@@ -1,6 +1,6 @@
-# OpsPilot
+# Vardiel
 
-OpsPilot is a code-first, safety-oriented operations agent implemented in Go. Its core runtime stays provider-neutral while adapters integrate with the Volcengine AI ecosystem.
+Vardiel is a code-first, safety-oriented operations agent implemented in Go. Its core runtime stays provider-neutral while adapters integrate with the Volcengine AI ecosystem.
 
 > Status: early development. The project includes a bounded Agent Runtime, an Ark Responses API adapter, an MCP stdio server, privacy-safe runtime events, optional OpenTelemetry tracing, and machine-readable, read-only network, Docker, Kubernetes, Prometheus, and Loki diagnostics.
 
@@ -31,13 +31,13 @@ OpsPilot is a code-first, safety-oriented operations agent implemented in Go. It
 
 ## Toolchain
 
-OpsPilot tracks the latest stable Go toolchain. The current baseline is Go 1.26.5.
+Vardiel tracks the latest stable Go toolchain. The current baseline is Go 1.26.5.
 
 ```bash
 go version
 go mod tidy
 go test ./...
-go build ./cmd/opspilot
+go build ./cmd/vardiel
 ```
 
 ## Configure Ark
@@ -54,7 +54,7 @@ export ARK_API_KEY='your-api-key'
 ## Run the agent
 
 ```bash
-go run ./cmd/opspilot agent run \
+go run ./cmd/vardiel agent run \
   'Check Kubernetes Pods, Prometheus targets, and Loki stream availability.'
 ```
 
@@ -63,7 +63,7 @@ The command writes the final structured result to stdout. The Ark model can sele
 ### Stream lifecycle events
 
 ```bash
-go run ./cmd/opspilot agent run --events=jsonl \
+go run ./cmd/vardiel agent run --events=jsonl \
   'Inspect example.com.' \
   2>events.jsonl
 ```
@@ -73,11 +73,11 @@ JSONL events are written to stderr, so agents can consume the final result from 
 ### Export OpenTelemetry traces
 
 ```bash
-export OPSPILOT_OTEL_ENABLED=true
-export OTEL_SERVICE_NAME=opspilot
+export VARDIEL_OTEL_ENABLED=true
+export OTEL_SERVICE_NAME=vardiel
 export OTEL_EXPORTER_OTLP_ENDPOINT='http://localhost:4318'
 
-go run ./cmd/opspilot agent run 'Inspect example.com.'
+go run ./cmd/vardiel agent run 'Inspect example.com.'
 ```
 
 The OTLP/HTTP exporter follows standard OpenTelemetry environment variables. Telemetry initialization or shutdown failures do not fail the diagnostic run.
@@ -87,8 +87,8 @@ The OTLP/HTTP exporter follows standard OpenTelemetry environment variables. Tel
 Build the binary and expose the registered read-only tools over stdio:
 
 ```bash
-go build -o ./bin/opspilot ./cmd/opspilot
-./bin/opspilot mcp stdio
+go build -o ./bin/vardiel ./cmd/vardiel
+./bin/vardiel mcp stdio
 ```
 
 A typical MCP client configuration is:
@@ -96,20 +96,20 @@ A typical MCP client configuration is:
 ```json
 {
   "mcpServers": {
-    "opspilot": {
-      "command": "/absolute/path/to/opspilot",
+    "vardiel": {
+      "command": "/absolute/path/to/vardiel",
       "args": ["mcp", "stdio"],
       "env": {
-        "OPSPILOT_HTTP_ALLOW_PRIVATE": "false",
-        "OPSPILOT_TLS_ALLOW_PRIVATE": "false",
-        "OPSPILOT_DOCKER_SOCKET": "/var/run/docker.sock",
-        "OPSPILOT_KUBECONFIG": "/absolute/path/to/kubeconfig",
-        "OPSPILOT_KUBERNETES_CONTEXT": "production-readonly",
-        "OPSPILOT_PROMETHEUS_URL": "https://prometheus.example.com",
-        "OPSPILOT_PROMETHEUS_BEARER_TOKEN_FILE": "/absolute/path/to/prometheus-token",
-        "OPSPILOT_LOKI_URL": "https://loki.example.com",
-        "OPSPILOT_LOKI_BEARER_TOKEN_FILE": "/absolute/path/to/loki-token",
-        "OPSPILOT_LOKI_TENANT_ID": "operations"
+        "VARDIEL_HTTP_ALLOW_PRIVATE": "false",
+        "VARDIEL_TLS_ALLOW_PRIVATE": "false",
+        "VARDIEL_DOCKER_SOCKET": "/var/run/docker.sock",
+        "VARDIEL_KUBECONFIG": "/absolute/path/to/kubeconfig",
+        "VARDIEL_KUBERNETES_CONTEXT": "production-readonly",
+        "VARDIEL_PROMETHEUS_URL": "https://prometheus.example.com",
+        "VARDIEL_PROMETHEUS_BEARER_TOKEN_FILE": "/absolute/path/to/prometheus-token",
+        "VARDIEL_LOKI_URL": "https://loki.example.com",
+        "VARDIEL_LOKI_BEARER_TOKEN_FILE": "/absolute/path/to/loki-token",
+        "VARDIEL_LOKI_TENANT_ID": "operations"
       }
     }
   }
@@ -121,51 +121,51 @@ The server publishes each Registry tool with its existing JSON Schema and explic
 ## Use the tool runtime directly
 
 ```bash
-go run ./cmd/opspilot tool list
+go run ./cmd/vardiel tool list
 
-go run ./cmd/opspilot tool run dns_lookup \
+go run ./cmd/vardiel tool run dns_lookup \
   '{"host":"example.com"}'
 
-go run ./cmd/opspilot tool run http_probe \
+go run ./cmd/vardiel tool run http_probe \
   '{"url":"https://example.com"}'
 
-go run ./cmd/opspilot tool run tls_inspect \
+go run ./cmd/vardiel tool run tls_inspect \
   '{"host":"example.com","port":443}'
 
-go run ./cmd/opspilot tool run docker_engine_info '{}'
+go run ./cmd/vardiel tool run docker_engine_info '{}'
 
-go run ./cmd/opspilot tool run docker_container_list \
+go run ./cmd/vardiel tool run docker_container_list \
   '{"all":true,"limit":100}'
 
-go run ./cmd/opspilot tool run docker_container_inspect \
+go run ./cmd/vardiel tool run docker_container_inspect \
   '{"container":"web"}'
 
-go run ./cmd/opspilot tool run kubernetes_cluster_info \
+go run ./cmd/vardiel tool run kubernetes_cluster_info \
   '{"node_limit":100}'
 
-go run ./cmd/opspilot tool run kubernetes_pod_list \
+go run ./cmd/vardiel tool run kubernetes_pod_list \
   '{"namespace":"operations","limit":100}'
 
-go run ./cmd/opspilot tool run kubernetes_pod_inspect \
+go run ./cmd/vardiel tool run kubernetes_pod_inspect \
   '{"namespace":"operations","pod":"web-0","event_limit":50}'
 
-go run ./cmd/opspilot tool run prometheus_server_info '{}'
+go run ./cmd/vardiel tool run prometheus_server_info '{}'
 
-go run ./cmd/opspilot tool run prometheus_target_list \
+go run ./cmd/vardiel tool run prometheus_target_list \
   '{"limit":100}'
 
-go run ./cmd/opspilot tool run prometheus_metric_snapshot \
+go run ./cmd/vardiel tool run prometheus_metric_snapshot \
   '{"metric":"up","matchers":{"job":"node"},"aggregation":"sum","group_by":["instance"],"limit":100}'
 
-go run ./cmd/opspilot tool run loki_server_info '{}'
+go run ./cmd/vardiel tool run loki_server_info '{}'
 
-go run ./cmd/opspilot tool run loki_stream_summary \
+go run ./cmd/vardiel tool run loki_stream_summary \
   '{"matchers":{"namespace":"operations","service_name":"api"},"lookback_minutes":60,"limit":100}'
 ```
 
 ### Docker diagnostic boundary
 
-`OPSPILOT_DOCKER_SOCKET` defaults to `/var/run/docker.sock`. It accepts an absolute filesystem path or a `unix:///absolute/path` URI. Remote `tcp://`, `http://`, `https://`, `ssh://`, and relative targets are rejected.
+`VARDIEL_DOCKER_SOCKET` defaults to `/var/run/docker.sock`. It accepts an absolute filesystem path or a `unix:///absolute/path` URI. Remote `tcp://`, `http://`, `https://`, `ssh://`, and relative targets are rejected.
 
 The Docker client negotiates the daemon API through `/version`, then performs bounded GET requests. It does not invoke the Docker CLI and does not expose mutating operations.
 
@@ -173,15 +173,15 @@ The Docker client negotiates the daemon API through `/version`, then performs bo
 
 Engine warning text is also omitted; only `warning_count` is returned. Container runtime errors are represented by `error_present` without returning the raw text.
 
-Access to a Docker Unix socket is still a privileged host capability. OpsPilot's read-only implementation does not turn the socket itself into a read-only security boundary. Only grant the process access to a trusted local socket, and do not mount that socket into untrusted containers.
+Access to a Docker Unix socket is still a privileged host capability. Vardiel's read-only implementation does not turn the socket itself into a read-only security boundary. Only grant the process access to a trusted local socket, and do not mount that socket into untrusted containers.
 
 ### Kubernetes diagnostic boundary
 
-OpsPilot uses the official Kubernetes client-go v0.36.2. Kubernetes configuration is initialized lazily, so missing credentials do not prevent non-Kubernetes tools or the MCP server from starting.
+Vardiel uses the official Kubernetes client-go v0.36.2. Kubernetes configuration is initialized lazily, so missing credentials do not prevent non-Kubernetes tools or the MCP server from starting.
 
-When running outside a cluster, set `OPSPILOT_KUBECONFIG` to an absolute kubeconfig path. `OPSPILOT_KUBERNETES_CONTEXT` optionally selects a context. When running inside Kubernetes without an explicit kubeconfig, OpsPilot uses the mounted ServiceAccount token and CA.
+When running outside a cluster, set `VARDIEL_KUBECONFIG` to an absolute kubeconfig path. `VARDIEL_KUBERNETES_CONTEXT` optionally selects a context. When running inside Kubernetes without an explicit kubeconfig, Vardiel uses the mounted ServiceAccount token and CA.
 
-Before constructing a Kubernetes client, OpsPilot rejects kubeconfigs that contain HTTP API servers, `insecure-skip-tls-verify`, proxy URLs, exec credential plugins, legacy auth-provider plugins, or user impersonation.
+Before constructing a Kubernetes client, Vardiel rejects kubeconfigs that contain HTTP API servers, `insecure-skip-tls-verify`, proxy URLs, exec credential plugins, legacy auth-provider plugins, or user impersonation.
 
 The model cannot provide a kubeconfig path, API server URL, arbitrary resource type, selector, API path, or HTTP method in tool arguments.
 
@@ -190,24 +190,24 @@ The model cannot provide a kubeconfig path, API server URL, arbitrary resource t
 Apply the included minimum RBAC objects for an in-cluster deployment:
 
 ```bash
-kubectl apply -f deploy/kubernetes/opspilot-readonly-rbac.yaml
+kubectl apply -f deploy/kubernetes/vardiel-readonly-rbac.yaml
 ```
 
 The role grants GET on `/version`, GET/LIST on Nodes and Pods, and LIST on Events. It does not grant Secret access or the `pods/log` subresource.
 
 ### Prometheus diagnostic boundary
 
-Set `OPSPILOT_PROMETHEUS_URL` to the trusted Prometheus base URL. HTTPS is required by default. Internal HTTP endpoints require the explicit `OPSPILOT_PROMETHEUS_ALLOW_HTTP=true` opt-in. Optional bearer authentication uses an absolute path in `OPSPILOT_PROMETHEUS_BEARER_TOKEN_FILE`; the token is read for each request to support rotation and is never returned.
+Set `VARDIEL_PROMETHEUS_URL` to the trusted Prometheus base URL. HTTPS is required by default. Internal HTTP endpoints require the explicit `VARDIEL_PROMETHEUS_ALLOW_HTTP=true` opt-in. Optional bearer authentication uses an absolute path in `VARDIEL_PROMETHEUS_BEARER_TOKEN_FILE`; the token is read for each request to support rotation and is never returned.
 
 The client disables ambient proxies and redirects, requires TLS 1.2 or newer for HTTPS, bounds response bytes and timeouts, and only calls fixed read-only `/api/v1` endpoints. It does not expose configuration, flags, rules, alerts, label enumeration, series enumeration, admin APIs, or arbitrary paths.
 
-`prometheus_metric_snapshot` does not accept raw PromQL. OpsPilot generates a bounded instant query from a validated metric name, up to eight exact-match diagnostic labels, one of `none`, `sum`, `avg`, `min`, `max`, or `count`, up to five grouping labels, and a hard series limit. Query parameters are submitted in a POST form rather than the URL.
+`prometheus_metric_snapshot` does not accept raw PromQL. Vardiel generates a bounded instant query from a validated metric name, up to eight exact-match diagnostic labels, one of `none`, `sum`, `avg`, `min`, `max`, or `count`, up to five grouping labels, and a hard series limit. Query parameters are submitted in a POST form rather than the URL.
 
 Prometheus output is projected before it reaches the Agent. Scrape URLs, discovered labels, arbitrary target and metric labels, target error text, runtime hostname and working directory, API warning/info text, and raw server errors are omitted. Only warning and info counts are retained.
 
 ### Loki diagnostic boundary
 
-Set `OPSPILOT_LOKI_URL` to a trusted Loki base URL. HTTPS is required by default. Internal HTTP requires `OPSPILOT_LOKI_ALLOW_HTTP=true`. Optional bearer authentication uses an absolute token file, and multi-tenant deployments may set one validated `OPSPILOT_LOKI_TENANT_ID`.
+Set `VARDIEL_LOKI_URL` to a trusted Loki base URL. HTTPS is required by default. Internal HTTP requires `VARDIEL_LOKI_ALLOW_HTTP=true`. Optional bearer authentication uses an absolute token file, and multi-tenant deployments may set one validated `VARDIEL_LOKI_TENANT_ID`.
 
 The client disables ambient proxies and redirects, requires TLS 1.2 or newer for HTTPS, and only calls `/ready`, `/loki/api/v1/status/buildinfo`, and POST `/loki/api/v1/series`. It does not expose log lines, arbitrary LogQL, query/query-range, tail, labels or label-value enumeration, push, delete, config, metrics, rings, rules, arbitrary paths, or arbitrary methods.
 

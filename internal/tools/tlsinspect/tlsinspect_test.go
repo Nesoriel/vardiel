@@ -266,7 +266,7 @@ func makeTestCertificate(t *testing.T, options certificateOptions) (tls.Certific
 	}
 	caTemplate := &x509.Certificate{
 		SerialNumber:          big.NewInt(1),
-		Subject:               pkix.Name{CommonName: "OpsPilot Test CA"},
+		Subject:               pkix.Name{CommonName: "Vardiel Test CA"},
 		NotBefore:             fixedNow.Add(-365 * 24 * time.Hour),
 		NotAfter:              fixedNow.Add(365 * 24 * time.Hour),
 		IsCA:                  true,
@@ -288,7 +288,7 @@ func makeTestCertificate(t *testing.T, options certificateOptions) (tls.Certific
 	}
 	leafTemplate := &x509.Certificate{
 		SerialNumber: big.NewInt(2),
-		Subject:      pkix.Name{CommonName: "OpsPilot Test Server"},
+		Subject:      pkix.Name{CommonName: "Vardiel Test Server"},
 		NotBefore:    options.NotBefore,
 		NotAfter:     options.NotAfter,
 		DNSNames:     append([]string(nil), options.DNSNames...),

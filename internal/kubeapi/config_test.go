@@ -35,7 +35,7 @@ func TestLoadRESTConfigAcceptsSafeKubeconfig(t *testing.T) {
 	if restConfig.Timeout != 3*time.Second || restConfig.QPS != 7 || restConfig.Burst != 12 {
 		t.Fatalf("unexpected limits: timeout=%v qps=%v burst=%d", restConfig.Timeout, restConfig.QPS, restConfig.Burst)
 	}
-	if restConfig.UserAgent != "opspilot/kubernetes-readonly" {
+	if restConfig.UserAgent != "vardiel/kubernetes-readonly" {
 		t.Fatalf("unexpected user agent: %q", restConfig.UserAgent)
 	}
 	proxy, err := restConfig.Proxy(&http.Request{})

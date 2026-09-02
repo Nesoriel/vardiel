@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
-	"github.com/Nesoriel/opspilot/internal/observability"
+	"github.com/Nesoriel/vardiel/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/observability"
 )
 
 const (
@@ -31,7 +31,7 @@ type runtimeObservability struct {
 }
 
 func parseAgentRunOptions(args []string, lookup func(string) string) (agentRunOptions, error) {
-	eventMode := strings.ToLower(strings.TrimSpace(lookup("OPSPILOT_EVENTS")))
+	eventMode := strings.ToLower(strings.TrimSpace(lookup("VARDIEL_EVENTS")))
 	if eventMode == "" {
 		eventMode = eventModeNone
 	}
@@ -61,8 +61,8 @@ func setupRuntimeObservability(ctx context.Context, eventMode string, eventWrite
 		observers = append(observers, observability.NewJSONLObserver(eventWriter))
 	}
 
-	enabled, err := strconv.ParseBool(strings.TrimSpace(lookup("OPSPILOT_OTEL_ENABLED")))
-	if err != nil && strings.TrimSpace(lookup("OPSPILOT_OTEL_ENABLED")) != "" {
+	enabled, err := strconv.ParseBool(strings.TrimSpace(lookup("VARDIEL_OTEL_ENABLED")))
+	if err != nil && strings.TrimSpace(lookup("VARDIEL_OTEL_ENABLED")) != "" {
 		return runtimeObservability{
 			observer: observability.Combine(observers...),
 			shutdown: func() {},
