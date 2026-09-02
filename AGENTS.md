@@ -107,7 +107,15 @@ After a pull request is open, prefer non-destructive follow-up commits. If the b
 - Do not add compatibility layers without a documented user or integration need.
 - Preserve public contracts unless the issue explicitly authorizes a breaking change.
 - Update documentation, examples, schemas, and migration notes when public behavior changes.
-- Prefer small, reviewable commits. Do not rewrite shared history.
+- Make each commit atomic: one coherent, independently reviewable and revertible change.
+- Every commit materially authored with a coding agent must include a canonical
+  `Co-authored-by: <agent name> <agent email>` trailer for each participating
+  agent. A pull-request AI disclosure does not replace commit attribution.
+- Within one accepted issue, prefer one pull request containing multiple atomic
+  commits over multiple pull requests. When practical, validate commits locally
+  and push them together to avoid redundant Actions runs; never combine unrelated
+  issues or weaken required checks to save CI time.
+- Do not rewrite shared history.
 - Do not commit credentials, `.env` files, local case data, coverage output, binaries, editor state, or production configuration.
 - Do not describe roadmap work as implemented behavior.
 

@@ -54,7 +54,16 @@ test/<issue-number>-<short-description>
 chore/<issue-number>-<short-description>
 ```
 
-Keep commits reviewable and use an imperative summary. Conventional prefixes such as `feat:`, `fix:`, `security:`, `docs:`, `test:`, `refactor:`, `ci:`, `build:`, and `chore:` are encouraged but not mechanically required.
+Make each commit one coherent, independently reviewable and revertible change,
+and use an imperative summary. Conventional prefixes such as `feat:`, `fix:`,
+`security:`, `docs:`, `test:`, `refactor:`, `ci:`, `build:`, and `chore:` are
+encouraged but not mechanically required.
+
+Within one accepted issue, prefer one pull request containing multiple atomic
+commits over several pull requests. When practical, finish and validate those
+commits locally and push them together so GitHub Actions does not run once per
+small edit. This does not permit unrelated issues in one pull request or skipping
+required validation.
 
 Do not:
 
@@ -130,6 +139,9 @@ The contributor remains accountable for every submitted line and must:
 - verify licenses and source attribution;
 - run the applicable tests;
 - disclose material AI assistance in the pull request;
+- add a canonical `Co-authored-by: <agent name> <agent email>` trailer to every
+  commit materially authored with a coding agent, naming each participating
+  agent;
 - describe human verification performed;
 - avoid sending repository secrets, private infrastructure data, or undisclosed third-party code to an external model.
 

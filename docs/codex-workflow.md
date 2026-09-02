@@ -63,10 +63,17 @@ Do not use destructive cleanup to make preparation succeed. Unknown work must no
 
 Codex is expected to make and push commits as part of completing a task.
 
-- Use small logical commits with imperative summaries; conventional prefixes are encouraged.
+- Make each commit atomic: one coherent, independently reviewable and revertible
+  change with an imperative summary; conventional prefixes are encouraged.
+- Add a canonical `Co-authored-by: <agent name> <agent email>` trailer for every
+  coding agent that materially authored the commit. Pull-request disclosure is
+  additional and does not replace the trailer.
 - Commit only files within the assigned scope.
 - Amend the latest commit only while it is the agent's own unpushed work.
 - After a branch is pushed or reviewed, preserve history and use follow-up commits.
+- Use one pull request for the accepted issue and keep multiple atomic commits in
+  it. When practical, validate those commits locally and batch them into one push
+  to avoid redundant Actions runs; do not mix issues or skip required checks.
 - Push only the assigned task branch and set its upstream when necessary.
 - Never commit or push directly to `main`.
 - Never use a GitHub App, administrator, integration, or ruleset bypass to avoid the pull-request and required-check path.
@@ -205,7 +212,7 @@ delivery order around a complete recovery loop:
 2. issue #19 — finish the narrow safe public error boundary without broadening it;
 3. create one issue for the `systemd-service-unavailable` daemon-to-validation vertical slice;
 4. harden privilege separation, crash recovery, policy, audit, notification, and real-host performance evidence around that slice;
-5. add resource-pressure, filesystem-pressure, and endpoint playbooks one complete slice at a time;
+5. establish the minimal local knowledge pack and expand error, environment, and deployment playbooks one complete slice at a time;
 6. add bounded model reasoning for unknown incidents;
 7. integrate fleet identity, inventory, policy distribution, and notification through Astralith.
 
