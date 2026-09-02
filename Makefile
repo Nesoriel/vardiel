@@ -11,10 +11,10 @@ test:
 
 build:
 	mkdir -p bin
-	go build -trimpath -o bin/opspilot ./cmd/opspilot
+	go build -trimpath -o bin/vardiel ./cmd/vardiel
 
 check:
 	test -z "$$(gofmt -l .)"
 	go vet ./...
 	go test ./...
-	go build ./cmd/opspilot
+	go build ./cmd/vardiel

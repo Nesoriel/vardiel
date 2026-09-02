@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/agent"
 )
 
 func TestJSONLObserverEmitsSafeStructuredEvent(t *testing.T) {

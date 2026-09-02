@@ -1,4 +1,4 @@
-module github.com/Nesoriel/opspilot
+module github.com/Nesoriel/vardiel
 
 go 1.26.5
 

@@ -8,7 +8,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/mcpserver"
+	"github.com/Nesoriel/vardiel/internal/mcpserver"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -39,5 +39,5 @@ func isMCPCommand(args []string) bool {
 }
 
 func printMCPUsage(writer io.Writer) {
-	fmt.Fprintln(writer, "usage: opspilot mcp stdio")
+	fmt.Fprintln(writer, "usage: vardiel mcp stdio")
 }

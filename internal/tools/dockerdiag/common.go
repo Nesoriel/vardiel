@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/Nesoriel/opspilot/internal/dockerapi"
+	"github.com/Nesoriel/vardiel/internal/dockerapi"
 )
 
 type Client interface {

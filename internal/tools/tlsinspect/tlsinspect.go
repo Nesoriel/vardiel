@@ -14,8 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
-	"github.com/Nesoriel/opspilot/internal/netguard"
+	"github.com/Nesoriel/vardiel/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/netguard"
 )
 
 const (

@@ -23,7 +23,7 @@ func TestClientMapsRedactedServerTargetsAndMetricSnapshot(t *testing.T) {
 		if request.Header.Get("Authorization") != "Bearer rotating-test-token" {
 			t.Errorf("unexpected authorization header: %q", request.Header.Get("Authorization"))
 		}
-		if request.Header.Get("User-Agent") != "opspilot/prometheus-readonly" {
+		if request.Header.Get("User-Agent") != "vardiel/prometheus-readonly" {
 			t.Errorf("unexpected user agent: %q", request.Header.Get("User-Agent"))
 		}
 		switch request.URL.Path {

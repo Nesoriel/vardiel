@@ -2,19 +2,19 @@
 
 ## Core principle
 
-OpsPilot owns its execution policy and state transitions. Volcengine services accelerate model inference, retrieval, deployment, and observability, but do not define the domain model.
+Vardiel owns its execution policy and state transitions. Volcengine services accelerate model inference, retrieval, deployment, and observability, but do not define the domain model.
 
 ```text
 OpenClaw / Hermes / MCP client / API / CLI
                   |
                   v
-          OpsPilot process boundary
+          Vardiel process boundary
           - Agent CLI
           - Tool CLI
           - MCP stdio server
                   |
                   v
-          OpsPilot Go runtime
+          Vardiel Go runtime
           - bounded agent loop
           - policy and approval
           - shared tool registry
@@ -46,8 +46,8 @@ OpenClaw / Hermes / MCP client / API / CLI
 - `internal/tools`: read-only operational tools. Tools must validate JSON strictly and respect `context.Context`.
 - `internal/mcpserver`: adapts the shared Registry to the official MCP Go SDK without duplicating tool implementations.
 - `internal/observability`: observer composition, privacy-safe JSONL records, and OpenTelemetry span translation.
-- `cmd/opspilot`: machine-readable process boundary. Human-friendly UI is not a current priority.
-- `skills`: instructions and schemas for external agents that invoke OpsPilot.
+- `cmd/vardiel`: machine-readable process boundary. Human-friendly UI is not a current priority.
+- `skills`: instructions and schemas for external agents that invoke Vardiel.
 
 ## MCP boundary
 
@@ -161,7 +161,7 @@ The Agent Runtime emits provider-neutral lifecycle events with a run ID, timesta
 ## Volcengine integration plan
 
 - Ark Responses API: model inference, function calling, streaming, and context caching.
-- Eino: typed Go composition and Ark adapter; adopted behind OpsPilot interfaces.
+- Eino: typed Go composition and Ark adapter; adopted behind Vardiel interfaces.
 - VikingDB: operational runbooks, incident cases, and evidence retrieval.
 - AgentKit/VKE: production runtime and deployment after the local runtime is testable.
 - Volcengine logging and monitoring: receive OTLP-compatible telemetry or consume structured events without changing the Agent Runtime.

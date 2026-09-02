@@ -104,7 +104,7 @@ func (c *Client) ready() error {
 func validateBaseURL(value string, allowHTTP bool) (*url.URL, error) {
 	value = strings.TrimSpace(value)
 	if value == "" {
-		return nil, errors.New("prometheus_config_not_found: OPSPILOT_PROMETHEUS_URL is not configured")
+		return nil, errors.New("prometheus_config_not_found: VARDIEL_PROMETHEUS_URL is not configured")
 	}
 	parsed, err := url.Parse(value)
 	if err != nil {
@@ -114,7 +114,7 @@ func validateBaseURL(value string, allowHTTP bool) (*url.URL, error) {
 		return nil, errors.New("prometheus_config_unsafe: Prometheus URL must use HTTPS or explicitly allowed HTTP")
 	}
 	if parsed.Scheme == "http" && !allowHTTP {
-		return nil, errors.New("prometheus_config_unsafe: HTTP requires OPSPILOT_PROMETHEUS_ALLOW_HTTP=true")
+		return nil, errors.New("prometheus_config_unsafe: HTTP requires VARDIEL_PROMETHEUS_ALLOW_HTTP=true")
 	}
 	if parsed.Host == "" || parsed.User != nil {
 		return nil, errors.New("prometheus_config_unsafe: Prometheus URL must have a host and no user information")
@@ -171,7 +171,7 @@ func (c *Client) requestJSON(ctx context.Context, method, apiPath string, query,
 		return responseMeta{}, errors.New("prometheus_request_invalid: request could not be created")
 	}
 	request.Header.Set("Accept", "application/json")
-	request.Header.Set("User-Agent", "opspilot/prometheus-readonly")
+	request.Header.Set("User-Agent", "vardiel/prometheus-readonly")
 	if form != nil {
 		request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	}

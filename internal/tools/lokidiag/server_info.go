@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/agent"
 )
 
 type ServerInfoTool struct {

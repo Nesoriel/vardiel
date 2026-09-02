@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
-	"github.com/Nesoriel/opspilot/internal/netguard"
+	"github.com/Nesoriel/vardiel/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/netguard"
 )
 
 type Config struct {
@@ -114,7 +114,7 @@ func (t *Tool) Execute(ctx context.Context, arguments json.RawMessage) (json.Raw
 	if err != nil {
 		return nil, fmt.Errorf("create request: %w", err)
 	}
-	httpRequest.Header.Set("User-Agent", "opspilot/0.1")
+	httpRequest.Header.Set("User-Agent", "vardiel/0.1")
 
 	started := time.Now()
 	response, err := t.client.Do(httpRequest)

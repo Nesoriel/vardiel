@@ -28,4 +28,4 @@ jobs:
       - name: Test
         run: go test -race -coverprofile=coverage.out ./...
       - name: Build
-        run: go build ./cmd/opspilot
+        run: go build ./cmd/vardiel

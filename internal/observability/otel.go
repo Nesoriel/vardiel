@@ -4,14 +4,14 @@ import (
 	"context"
 	"errors"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/agent"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
-const instrumentationName = "github.com/Nesoriel/opspilot"
+const instrumentationName = "github.com/Nesoriel/vardiel"
 
 type Telemetry struct {
 	provider *sdktrace.TracerProvider
@@ -19,7 +19,7 @@ type Telemetry struct {
 
 func NewOTLPTelemetry(ctx context.Context, serviceName string) (*Telemetry, error) {
 	if serviceName == "" {
-		serviceName = "opspilot"
+		serviceName = "vardiel"
 	}
 
 	exporter, err := otlptracehttp.New(ctx)

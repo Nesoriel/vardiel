@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/agent"
 	"go.opentelemetry.io/otel/codes"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
@@ -72,9 +72,9 @@ func TestTraceObserverCreatesParentedSpansWithoutSensitiveErrors(t *testing.T) {
 		}
 	}
 
-	runSpan := byName["opspilot.agent.run"]
-	modelSpan := byName["opspilot.model.generate"]
-	toolSpan := byName["opspilot.tool.execute"]
+	runSpan := byName["vardiel.agent.run"]
+	modelSpan := byName["vardiel.model.generate"]
+	toolSpan := byName["vardiel.tool.execute"]
 	if runSpan == nil || modelSpan == nil || toolSpan == nil {
 		t.Fatalf("missing expected spans: %#v", byName)
 	}

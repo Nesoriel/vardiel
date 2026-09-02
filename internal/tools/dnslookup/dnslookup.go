@@ -9,7 +9,7 @@ import (
 	"net"
 	"sort"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/agent"
 )
 
 type Resolver interface {

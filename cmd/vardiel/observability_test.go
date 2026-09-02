@@ -7,14 +7,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/agent"
 )
 
 func TestParseAgentRunOptionsFlagOverridesEnvironment(t *testing.T) {
 	options, err := parseAgentRunOptions(
 		[]string{"--events=jsonl", "inspect", "example.com"},
 		func(key string) string {
-			if key == "OPSPILOT_EVENTS" {
+			if key == "VARDIEL_EVENTS" {
 				return "none"
 			}
 			return ""
@@ -64,7 +64,7 @@ func TestInvalidOTelConfigurationDoesNotFailSetup(t *testing.T) {
 		eventModeNone,
 		&bytes.Buffer{},
 		func(key string) string {
-			if key == "OPSPILOT_OTEL_ENABLED" {
+			if key == "VARDIEL_OTEL_ENABLED" {
 				return "not-a-bool"
 			}
 			return ""

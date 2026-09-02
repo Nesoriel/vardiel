@@ -3,12 +3,12 @@ package main
 import "testing"
 
 func TestBuildRegistryIncludesReadOnlyDiagnostics(t *testing.T) {
-	t.Setenv("OPSPILOT_HTTP_ALLOW_PRIVATE", "false")
-	t.Setenv("OPSPILOT_TLS_ALLOW_PRIVATE", "false")
-	t.Setenv("OPSPILOT_DOCKER_SOCKET", "")
-	t.Setenv("OPSPILOT_KUBECONFIG", "/definitely/not/loaded/during-registry-build")
-	t.Setenv("OPSPILOT_PROMETHEUS_URL", "")
-	t.Setenv("OPSPILOT_LOKI_URL", "")
+	t.Setenv("VARDIEL_HTTP_ALLOW_PRIVATE", "false")
+	t.Setenv("VARDIEL_TLS_ALLOW_PRIVATE", "false")
+	t.Setenv("VARDIEL_DOCKER_SOCKET", "")
+	t.Setenv("VARDIEL_KUBECONFIG", "/definitely/not/loaded/during-registry-build")
+	t.Setenv("VARDIEL_PROMETHEUS_URL", "")
+	t.Setenv("VARDIEL_LOKI_URL", "")
 	registry, err := buildRegistry()
 	if err != nil {
 		t.Fatalf("build registry: %v", err)
@@ -42,7 +42,7 @@ func TestBuildRegistryIncludesReadOnlyDiagnostics(t *testing.T) {
 }
 
 func TestBuildRegistryRejectsRemoteDockerTargets(t *testing.T) {
-	t.Setenv("OPSPILOT_DOCKER_SOCKET", "tcp://127.0.0.1:2375")
+	t.Setenv("VARDIEL_DOCKER_SOCKET", "tcp://127.0.0.1:2375")
 	if _, err := buildRegistry(); err == nil {
 		t.Fatal("expected remote Docker target to be rejected")
 	}

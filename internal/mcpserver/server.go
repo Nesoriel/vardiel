@@ -9,7 +9,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/agent"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -37,12 +37,12 @@ func New(registry *agent.Registry, config Config) (*mcp.Server, error) {
 
 	server := mcp.NewServer(
 		&mcp.Implementation{
-			Name:    "opspilot",
-			Title:   "OpsPilot",
+			Name:    "vardiel",
+			Title:   "Vardiel",
 			Version: config.Version,
 		},
 		&mcp.ServerOptions{
-			Instructions: "Use these read-only tools to collect operational evidence. Preserve uncertainty and do not invent results.",
+			Instructions: "Use Vardiel's read-only tools to collect operational evidence. Preserve uncertainty and do not invent results.",
 			Logger:       config.Logger,
 			Capabilities: &mcp.ServerCapabilities{},
 		},

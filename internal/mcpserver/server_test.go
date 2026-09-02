@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/agent"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -69,8 +69,11 @@ func TestServerDiscoveryAndToolExecution(t *testing.T) {
 	defer serverSession.Close()
 
 	initialize := clientSession.InitializeResult()
-	if initialize.ServerInfo.Name != "opspilot" || initialize.ServerInfo.Version != "v0.1.0" {
+	if initialize.ServerInfo.Name != "vardiel" || initialize.ServerInfo.Title != "Vardiel" || initialize.ServerInfo.Version != "v0.1.0" {
 		t.Fatalf("unexpected server metadata: %#v", initialize.ServerInfo)
+	}
+	if !strings.Contains(initialize.Instructions, "Vardiel") {
+		t.Fatalf("unexpected server instructions: %q", initialize.Instructions)
 	}
 
 	listed, err := clientSession.ListTools(context.Background(), nil)

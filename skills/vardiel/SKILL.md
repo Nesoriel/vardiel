@@ -1,31 +1,31 @@
 ---
-name: opspilot
-description: Run safe, read-only infrastructure diagnostics or delegate a bounded diagnostic task to the OpsPilot Go agent.
+name: vardiel
+description: Run safe, read-only infrastructure diagnostics or delegate a bounded diagnostic task to the Vardiel Go agent.
 ---
 
-# OpsPilot skill
+# Vardiel skill
 
-Use OpsPilot when evidence is required from DNS, HTTP, TLS, a trusted local Docker Engine, a Kubernetes cluster configured with least-privilege credentials, or trusted Prometheus and Loki endpoints. Treat its JSON output as evidence and preserve uncertainty.
+Use Vardiel when evidence is required from DNS, HTTP, TLS, a trusted local Docker Engine, a Kubernetes cluster configured with least-privilege credentials, or trusted Prometheus and Loki endpoints. Treat its JSON output as evidence and preserve uncertainty.
 
 ## Preferred integration: MCP
 
-Configure the OpsPilot binary as a stdio MCP server:
+Configure the Vardiel binary as a stdio MCP server:
 
 ```json
 {
   "mcpServers": {
-    "opspilot": {
-      "command": "/absolute/path/to/opspilot",
+    "vardiel": {
+      "command": "/absolute/path/to/vardiel",
       "args": ["mcp", "stdio"],
       "env": {
-        "OPSPILOT_DOCKER_SOCKET": "/var/run/docker.sock",
-        "OPSPILOT_KUBECONFIG": "/absolute/path/to/kubeconfig",
-        "OPSPILOT_KUBERNETES_CONTEXT": "production-readonly",
-        "OPSPILOT_PROMETHEUS_URL": "https://prometheus.example.com",
-        "OPSPILOT_PROMETHEUS_BEARER_TOKEN_FILE": "/absolute/path/to/prometheus-token",
-        "OPSPILOT_LOKI_URL": "https://loki.example.com",
-        "OPSPILOT_LOKI_BEARER_TOKEN_FILE": "/absolute/path/to/loki-token",
-        "OPSPILOT_LOKI_TENANT_ID": "operations"
+        "VARDIEL_DOCKER_SOCKET": "/var/run/docker.sock",
+        "VARDIEL_KUBECONFIG": "/absolute/path/to/kubeconfig",
+        "VARDIEL_KUBERNETES_CONTEXT": "production-readonly",
+        "VARDIEL_PROMETHEUS_URL": "https://prometheus.example.com",
+        "VARDIEL_PROMETHEUS_BEARER_TOKEN_FILE": "/absolute/path/to/prometheus-token",
+        "VARDIEL_LOKI_URL": "https://loki.example.com",
+        "VARDIEL_LOKI_BEARER_TOKEN_FILE": "/absolute/path/to/loki-token",
+        "VARDIEL_LOKI_TENANT_ID": "operations"
       }
     }
   }
@@ -76,7 +76,7 @@ For Loki incidents:
 ## Delegate a diagnostic task
 
 ```bash
-opspilot agent run 'Check Kubernetes Pods, Prometheus targets, and Loki stream availability.'
+vardiel agent run 'Check Kubernetes Pods, Prometheus targets, and Loki stream availability.'
 ```
 
 This requires `ARK_MODEL_ID` and Ark credentials in the process environment. The command writes JSON containing the final answer, message history, and step count to stdout.
@@ -84,7 +84,7 @@ This requires `ARK_MODEL_ID` and Ark credentials in the process environment. The
 For live progress without mixing events into the final result:
 
 ```bash
-opspilot agent run --events=jsonl 'Inspect example.com.' 2>events.jsonl
+vardiel agent run --events=jsonl 'Inspect example.com.' 2>events.jsonl
 ```
 
 Consume stderr as a JSONL event stream and stdout as the final result. Events contain lifecycle metadata only; they do not contain prompts, tool arguments, tool results, or credentials.
@@ -92,26 +92,26 @@ Consume stderr as a JSONL event stream and stdout as the final result. Events co
 ## Discover tools without MCP
 
 ```bash
-opspilot tool list
+vardiel tool list
 ```
 
 ## Run a tool directly
 
 ```bash
-opspilot tool run dns_lookup '{"host":"example.com"}'
-opspilot tool run http_probe '{"url":"https://example.com"}'
-opspilot tool run tls_inspect '{"host":"example.com","port":443}'
-opspilot tool run docker_engine_info '{}'
-opspilot tool run docker_container_list '{"all":true,"limit":100}'
-opspilot tool run docker_container_inspect '{"container":"web"}'
-opspilot tool run kubernetes_cluster_info '{"node_limit":100}'
-opspilot tool run kubernetes_pod_list '{"namespace":"operations","limit":100}'
-opspilot tool run kubernetes_pod_inspect '{"namespace":"operations","pod":"web-0","event_limit":50}'
-opspilot tool run prometheus_server_info '{}'
-opspilot tool run prometheus_target_list '{"limit":100}'
-opspilot tool run prometheus_metric_snapshot '{"metric":"up","matchers":{"job":"node"},"aggregation":"sum","group_by":["instance"],"limit":100}'
-opspilot tool run loki_server_info '{}'
-opspilot tool run loki_stream_summary '{"matchers":{"namespace":"operations","service_name":"api"},"lookback_minutes":60,"limit":100}'
+vardiel tool run dns_lookup '{"host":"example.com"}'
+vardiel tool run http_probe '{"url":"https://example.com"}'
+vardiel tool run tls_inspect '{"host":"example.com","port":443}'
+vardiel tool run docker_engine_info '{}'
+vardiel tool run docker_container_list '{"all":true,"limit":100}'
+vardiel tool run docker_container_inspect '{"container":"web"}'
+vardiel tool run kubernetes_cluster_info '{"node_limit":100}'
+vardiel tool run kubernetes_pod_list '{"namespace":"operations","limit":100}'
+vardiel tool run kubernetes_pod_inspect '{"namespace":"operations","pod":"web-0","event_limit":50}'
+vardiel tool run prometheus_server_info '{}'
+vardiel tool run prometheus_target_list '{"limit":100}'
+vardiel tool run prometheus_metric_snapshot '{"metric":"up","matchers":{"job":"node"},"aggregation":"sum","group_by":["instance"],"limit":100}'
+vardiel tool run loki_server_info '{}'
+vardiel tool run loki_stream_summary '{"matchers":{"namespace":"operations","service_name":"api"},"lookback_minutes":60,"limit":100}'
 ```
 
 Check `ok` before reading `data`. Do not enable private-network HTTP/TLS, Prometheus HTTP, or Loki HTTP outside a trusted environment. Docker sockets, Kubernetes credentials, Prometheus credentials, Loki credentials, and Loki tenant identities must be least-privilege and scoped to the configured endpoint.

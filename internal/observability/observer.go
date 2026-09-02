@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/Nesoriel/opspilot/internal/agent"
+	"github.com/Nesoriel/vardiel/internal/agent"
 )
 
 type multiObserver struct {
