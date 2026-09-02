@@ -1,195 +1,202 @@
 # Vardiel development roadmap
 
-This roadmap defines capability boundaries and sequencing. It is not permission to implement several milestones in one pull request. Every item requires a focused GitHub issue and review.
+This roadmap optimizes for one outcome: restore common Linux failures quickly
+and safely without interrupting the operator. Every implementation item still
+requires one focused issue, branch, pull request, and review.
 
-## Current baseline: Vardiel
+## Product north star
 
-The preserved baseline already provides:
+Vardiel is successful when a known incident follows this path:
 
-- provider-neutral bounded Agent Runtime
-- Ark Responses API adapter
-- shared typed Registry
-- MCP stdio server
-- machine-readable CLI
-- privacy-safe JSONL lifecycle events
-- optional OpenTelemetry tracing
-- bounded read-only DNS, HTTP, and TLS tools
-- bounded read-only Docker, Kubernetes, Prometheus, and Loki diagnostics
-- strict input validation, SSRF protection, output projection, and privacy tests
+```text
+detect locally
+-> diagnose deterministically
+-> execute a pre-authorized fixed action
+-> validate recovery
+-> record quietly
+```
 
-The baseline archive ref is `archive/opspilot-baseline-2026-07-16` at commit `464349280efb48b64acd5ed1195187045e66cd5c`.
+Humans are notified only when authority, risk, confidence, validation, or
+recovery budgets require a decision. Known recovery must not depend on a model
+or remote control plane.
 
-## v0.1.0 — Evidence-driven Linux diagnostics
+## Current baseline
 
-Goal: deliver a safe daily-use local diagnostic agent and a credible course-project release without opening state-changing infrastructure operations.
+The repository currently provides:
 
-### Foundation
+- a provider-neutral bounded Agent Runtime and Ark adapter;
+- one shared Registry used by Agent, CLI, and MCP;
+- machine-readable CLI and MCP stdio surfaces;
+- privacy-safe JSONL events and optional OpenTelemetry traces;
+- bounded read-only DNS, HTTP, TLS, Docker, Kubernetes, Prometheus, and Loki
+  diagnostics;
+- strict input validation, SSRF protection, output projection, timeouts, and
+  privacy tests.
 
-- complete behavior-preserving Vardiel identity migration
-- establish a unified safe public error boundary
-- refresh dependencies in isolated dependency-family pull requests
-- introduce Tool Contract v2 with input/output schemas and truthful annotations
-- keep Agent, CLI, and MCP on one shared Registry
+It does **not** yet provide an always-on daemon, Linux event subscriptions,
+standing recovery policy, mutating actions, automatic recovery, or notification
+delivery. The baseline archive is `archive/opspilot-baseline-2026-07-16` at
+`464349280efb48b64acd5ed1195187045e66cd5c`.
 
-### Evidence and cases
+## Immediate sequence
 
-- define `DiagnosticCase`, `DiagnosticPlan`, `PlanStep`, `Observation`, `Finding`, `DiagnosisReport`, and `ActionProposal`
-- assign stable evidence identifiers such as `E1`, `E2`, and `E3`
-- require findings and conclusions to reference evidence IDs
-- store transparent local case bundles under the user's data directory
-- keep raw sensitive data out of public reports and default stdout
-- make full traces opt-in rather than default output
+### 0. Accept the direction reset
 
-### Linux host diagnostics
+- merge the documentation and ADR work tracked by issue #33;
+- rewrite tracking issue #22 to use this roadmap after the ADR is accepted;
+- keep current runtime behavior read-only until action issues are implemented.
 
-Add bounded read-only tools for:
+### 1. Finish the narrow public-error boundary
 
-- host inventory and operating-system facts
-- uptime and load snapshot
-- memory and swap snapshot
-- pressure stall information when available
-- filesystem and inode usage
-- process resource hotspots without environment values or full command lines
-- failed systemd units
-- one systemd unit status
-- listening sockets with bounded projections
+Issue #19 remains valuable security hardening because provider and
+infrastructure text must not leak through future incident records or
+notifications. Finish its exact scoped contract without adding case storage,
+Tool Contract v2, new tools, or recovery behavior.
 
-Implementation rules:
+This is the last horizontal prerequisite before the first recovery slice.
 
-- prefer `/proc`, `statfs`, netlink, and fixed argument builders
-- never expose an arbitrary shell string
-- never return process environments
-- strictly validate unit names and all user-controlled fields
-- bound item counts and free-text lengths
+### 2. Ship one systemd recovery vertical slice
 
-### Deterministic analyzers
+Create one implementation issue for `systemd-service-unavailable` that delivers
+the smallest complete loop:
 
-Add analyzers for:
+- an always-on `vardield` process with clean startup, cancellation, reconnect,
+  and shutdown;
+- systemd unit failure events through a typed adapter, with a bounded fallback
+  check when signals are unavailable;
+- one deduplicated incident state machine and per-target lock;
+- minimal bounded unit, listener, and endpoint observations collected in
+  parallel where independent;
+- explicit standing policy for an allowlisted unit and one fixed restart action;
+- preconditions, timeout, attempt budget, cooldown, and circuit breaker;
+- post-action unit and endpoint validation;
+- sanitized local incident/audit output;
+- quiet success plus one deduplicated, bounded HTTPS webhook escalation path;
+- notification retry isolated from recovery so delivery failure cannot repeat
+  an action;
+- measurement of the ADR 0002 latency budgets;
+- no model or remote service call on the known path.
 
-- host load pressure
-- memory and swap pressure
-- filesystem and inode pressure
-- process hotspots
-- systemd service health
-- Docker container health
-- web endpoint reachability
-- Kubernetes Pod health
-- Prometheus target health
+Do not begin with a generic workflow framework. Extract shared contracts only
+after this slice proves what must be shared.
 
-Analyzers produce deterministic `Finding` objects before the language model explains them. Thresholds belong in validated configuration rather than prompts.
+### 3. Harden the local recovery runtime
 
-### Typed diagnostic plans
+After the vertical slice works on a real Linux fixture:
 
-- define a strongly typed plan schema
-- validate tool existence, annotations, arguments, dependencies, cycles, attempts, and total budgets
-- execute only read-only tools in v0.1
-- allow deterministic execution without a configured language model
-- preserve partial results when a step fails
-- prevent duplicate equivalent calls in one plan
+- crash-safe incident resumption and duplicate-action protection;
+- least-privilege daemon/action separation and multi-user authorization;
+- policy expiry, maintenance windows, concurrency and blast-radius limits;
+- action audit retention and privacy rules;
+- additional notifier integrations and durable bounded delivery retry;
+- install, upgrade, rollback, and service-hardening documentation;
+- performance and soak tests for event bursts and flapping services.
 
-### Built-in playbooks
+### 4. Add the next high-value playbooks
 
-Ship at least these three versioned playbooks:
+Add one vertical slice at a time, chosen from real incident frequency:
 
-1. `host-resource-pressure`
-2. `systemd-service-unavailable`
-3. `web-endpoint-unreachable`
+1. host memory/CPU/I/O pressure using PSI and cgroup/systemd facts;
+2. filesystem or inode pressure with non-destructive diagnosis first;
+3. local web endpoint unavailable with DNS/TLS/listener/service correlation;
+4. Docker container restart only after a separate socket-risk and action-policy
+   review.
 
-Each playbook must include deterministic steps, applicability metadata, budgets, expected evidence, and end-to-end fixtures.
+Each slice must include detection, observations, policy, action when safe,
+validation, cooldown/circuit breaking, notification behavior, and a real Linux
+fixture. Kubernetes mutations remain with Kube-Sentinel.
 
-### Model adapters and user entry point
+### 5. Add bounded model reasoning for unknown incidents
 
-- retain Ark support behind the provider-neutral interface
-- add one OpenAI-compatible adapter
-- support a local OpenAI-compatible endpoint without changing the core Runtime
-- introduce `vardiel diagnose` as the primary user command
-- keep `tool`, `case`, `playbook`, `doctor`, and `mcp` machine-readable
+Only after deterministic recovery is proven:
 
-### v0.1 explicit non-goals
+- let a provider-neutral model rank hypotheses from bounded observations;
+- allow selection only among registered observation steps and playbooks;
+- require deterministic validation and policy for every proposed action;
+- enforce a strict model latency and cost budget;
+- fall back to escalation when the model is unavailable or uncertain;
+- evaluate diagnosis quality on sanitized incident fixtures.
 
-- arbitrary shell execution
-- model-generated code execution
-- automatic service or container restart
-- Kubernetes mutations
-- remote SSH inventory or Ansible scheduling
-- web UI
-- multi-agent orchestration
-- RAG or vector database
-- raw Journal, container, or application log ingestion
-- autonomous scheduled remediation
+The model never grants authority and never emits executable shell or code.
 
-## v0.2.0 — Integration and external tool surfaces
+### 6. Add fleet and multi-user integration
 
-Goal: make Vardiel reusable from other Nesoriel systems and trusted agent runtimes.
+Integrate with Astralith for identity, host inventory, policy distribution,
+fleet correlation, notification delivery, UI, and centralized audit. Preserve
+the per-host daemon as the authority for the local low-latency loop so a control
+plane outage cannot block an approved recovery.
 
-Planned scope:
+## v0.1.0 release
 
-- MCP client support for approved external tool servers
-- capability discovery and per-server policy
-- signed or pinned external tool-server configuration
-- stable case/report interchange format
-- Astralith integration through MCP, API, or JSON contracts
-- import of Astralith Evidence Packs without duplicating inventory or scheduling
-- optional remote diagnostic transport supplied by Astralith rather than embedded host management
-- richer Agent Skill packaging
-- case-bundle migration and schema-version support
+The exact v0.1 contract is in [v0.1-scope.md](v0.1-scope.md). Its release proof
+is one reliable single-host systemd recovery loop, not the number of adapters,
+schemas, or documents shipped.
 
-Non-goals remain a standalone web control plane and a competing host inventory.
+## Re-sequenced existing issues
 
-## v0.3.0 — Policy, approvals, and action proposals
+| Issue | Disposition after issue #33 is accepted |
+| --- | --- |
+| #19 safe public errors | Keep, finish narrowly before the first mutating slice. |
+| #20 Tool Contract v2 | Supersede. Define only the observation/action metadata proven necessary by the systemd slice. |
+| #21 evidence and case bundles | Defer. The first slice needs a minimal sanitized incident/action journal, not a general case platform. |
+| #22 v0.1 tracking | Rewrite around the systemd closed loop and this roadmap. |
 
-Goal: prepare safe state changes without enabling broad autonomous mutation.
+Do not close or rewrite these issues merely because this branch exists. Update
+them after the ADR and roadmap are merged.
 
-Planned scope:
+## Explicitly deprioritized
 
-- typed `ActionProposal` contracts
-- deterministic policy evaluation
-- explicit approval state and expiry
-- target, scope, blast-radius, maintenance-window, and capability checks
-- dry-run or diff support where the underlying system provides it
-- pre-change snapshots and rollback plans
-- post-action validation plans
-- audit events that do not leak sensitive payloads
-- integration hooks for Astralith approval UI and Kube-Sentinel advisory flows
+The following work is not on the critical path to the first recovery loop:
 
-Execution support may remain disabled for some or all proposals in this milestone.
+- a universal Tool Contract v2 migration across every current adapter;
+- a general evidence/case-bundle storage system;
+- more model providers or vector retrieval;
+- a large generated tool catalog;
+- remote SSH inventory or Ansible scheduling inside Vardiel;
+- a web UI or centralized authentication inside Vardiel;
+- more Kubernetes, Prometheus, or Loki surface area;
+- arbitrary shell, scripts, or model-generated code;
+- broad Docker or Kubernetes mutation.
 
-## v1.0.0 — Selected bounded actions
+Add one only when a proven recovery slice needs it or a maintainer accepts a
+separate product reason.
 
-Goal: support a deliberately small set of production-quality mutations.
+## Release-line outlook
 
-Candidate actions must satisfy all of the following:
+### v0.1 — one fast local recovery loop
 
-- fixed typed interface; no arbitrary shell or API path
-- deterministic policy evaluation
-- explicit scoped approval
-- idempotency or duplicate protection
-- preconditions and blast-radius limits
-- bounded timeout and retries
-- post-change validation
-- rollback or safe failure semantics
-- complete audit trail
-- dedicated integration tests in realistic environments
+One allowlisted systemd service, event-driven detection, standing policy, fixed
+restart action, validation, audit, circuit breaking, and quiet success.
 
-The exact action list will be selected from validated daily-use scenarios. Broad self-healing is not a v1.0 requirement.
+### v0.2 — useful host coverage
 
-## Quality gates for every milestone
+Resource pressure, filesystem pressure, and local endpoint playbooks; hardened
+privilege separation; notification delivery; real-host soak and recovery tests.
 
-- focused issue and pull request boundaries
-- clean `go mod tidy`
-- clean formatting and `go vet`
-- race-enabled test suite
-- buildable CLI
-- malformed-input and cancellation tests
-- privacy and secret-injection regression tests
-- deterministic fixture output
-- updated architecture and migration documentation
-- no unreviewed weakening of existing safety boundaries
+### v0.3 — unknown incidents and fleets
 
-## Release discipline
+Bounded model-assisted diagnosis, Astralith fleet/multi-user integration,
+cross-host correlation, and centrally distributed policy without making the
+control plane a local recovery dependency.
 
-- use semantic versioning beginning with `v0.1.0`
-- publish release notes with compatibility and security impact
-- provide checksums for released binaries
-- keep the previous stable binary and case-schema migration notes available
-- do not describe roadmap items as implemented capabilities
+### v1.0 — production confidence
+
+Multiple proven recovery playbooks with stable policy and incident schemas,
+upgrade/rollback support, measurable reliability and latency, security review,
+and documented operational limits.
+
+## Metrics that govern priority
+
+Prefer work that improves one of these measures:
+
+- detection latency;
+- time to first safe action;
+- time to verified recovery;
+- autonomous recovery success rate;
+- false-action and rollback rate;
+- repeat-incident/circuit-breaker rate;
+- percentage of incidents requiring a notification;
+- operator time required per unresolved incident.
+
+Do not optimize tool count, prompt size, schema count, or integration count as a
+proxy for recovery value.

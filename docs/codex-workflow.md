@@ -142,8 +142,10 @@ Answer these before implementation and again before review:
 5. Does tool metadata truthfully describe read-only, idempotent, destructive, open-world, risk, cost, and sensitivity behavior?
 6. Is execution success separate from observed target health?
 7. Can a finding or conclusion exist without valid evidence references?
-8. Does the change duplicate Astralith or Kube-Sentinel responsibilities?
-9. Does every failure mode remain safe, observable, cancellable, and testable?
+8. For a mutating action, where is standing or per-incident authorization checked, and are target, blast radius, preconditions, lock, attempts, cooldown, circuit breaker, validation, audit, and rollback/non-rollback behavior explicit?
+9. Can a known recovery complete within its local deadline without a model or remote control plane?
+10. Does the change duplicate Astralith or Kube-Sentinel responsibilities?
+11. Does every failure mode remain safe, observable, cancellable, and testable?
 
 Do not treat a written invariant as evidence that the existing code already implements it. Link known baseline gaps and avoid expanding them.
 
@@ -194,16 +196,18 @@ The final handoff must also state:
 
 ## Current implementation sequence
 
-The identity migration was completed in pull request #24. Continue in order:
+The identity migration was completed in pull request #24. ADR 0002 resets the
+delivery order around a complete recovery loop:
 
-1. issue #19 — safe public error boundary;
-2. issue #20 — Tool Contract v2;
-3. issue #21 — evidence and local case bundles;
-4. Linux host and systemd diagnostics;
-5. deterministic analyzers;
-6. typed diagnostic plans;
-7. three built-in playbooks;
-8. model factory and OpenAI-compatible adapter;
-9. `v0.1.0` release preparation.
+1. issue #33 — accept and synchronize the autonomous Linux recovery direction;
+2. issue #19 — finish the narrow safe public error boundary without broadening it;
+3. create one issue for the `systemd-service-unavailable` daemon-to-validation vertical slice;
+4. harden privilege separation, crash recovery, policy, audit, notification, and real-host performance evidence around that slice;
+5. add resource-pressure, filesystem-pressure, and endpoint playbooks one complete slice at a time;
+6. add bounded model reasoning for unknown incidents;
+7. integrate fleet identity, inventory, policy distribution, and notification through Astralith.
 
-Do not skip the public-error and tool-contract foundations to reach feature work faster.
+Issue #20's universal Tool Contract v2 and issue #21's general case-bundle work
+are not prerequisites for the first recovery slice. After issue #33 merges,
+supersede or reshape them around contracts proven necessary by the working
+systemd loop. Do not describe this target sequence as implemented behavior.

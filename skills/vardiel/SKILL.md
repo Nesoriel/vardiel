@@ -7,6 +7,12 @@ description: Run safe, read-only infrastructure diagnostics or delegate a bounde
 
 Use Vardiel when evidence is required from DNS, HTTP, TLS, a trusted local Docker Engine, a Kubernetes cluster configured with least-privilege credentials, or trusted Prometheus and Loki endpoints. Treat its JSON output as evidence and preserve uncertainty.
 
+> Current capability: read-only, request-driven diagnostics. The accepted
+> product direction adds an always-on local Linux recovery daemon, but that
+> daemon, standing policy, fixed actions, automatic recovery, and notification
+> behavior are not implemented yet. Do not claim that Vardiel repaired a host
+> unless a future action result and independent validation explicitly prove it.
+
 ## Preferred integration: MCP
 
 Configure the Vardiel binary as a stdio MCP server:
@@ -117,3 +123,15 @@ vardiel tool run loki_stream_summary '{"matchers":{"namespace":"operations","ser
 Check `ok` before reading `data`. Do not enable private-network HTTP/TLS, Prometheus HTTP, or Loki HTTP outside a trusted environment. Docker sockets, Kubernetes credentials, Prometheus credentials, Loki credentials, and Loki tenant identities must be least-privilege and scoped to the configured endpoint.
 
 Do not fabricate tool results. Preserve returned error classes and continue with other read-only evidence when possible. Never expose Ark credentials, kubeconfig contents, ServiceAccount tokens, Prometheus or Loki bearer tokens, tenant credentials, or raw infrastructure credentials in prompts, logs, or tool arguments. In MCP mode, treat stdout as protocol-only and send diagnostics to stderr.
+
+## Roadmap boundary
+
+ADR 0002 makes fast autonomous Linux recovery the product goal. The first
+planned slice is one allowlisted systemd service with event-driven detection,
+explicit standing authorization, a fixed restart action, health validation,
+cooldown/circuit breaking, sanitized audit, and quiet success. Known recovery
+must not require a model call.
+
+Until that implementation is merged, external agents must treat every current
+Vardiel tool as read-only. They must not synthesize shell commands, infer policy,
+or turn current observation results into an unapproved mutation.

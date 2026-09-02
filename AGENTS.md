@@ -18,18 +18,21 @@ Do not silently resolve a material conflict. Stop, describe it, and ask the main
 
 ## Project intent
 
-Vardiel is a Go-first, evidence-driven operations diagnostic agent for personal servers, homelabs, and small infrastructure environments.
-
-Its default posture is bounded and read-only:
+Vardiel is a Go-first, fast, low-interruption Linux incident-response agent. Its target product loop is:
 
 ```text
-collect structured evidence
--> make deterministic findings
--> explain uncertainty
--> propose, but do not silently execute, changes
+detect locally
+-> diagnose deterministically
+-> execute an explicitly pre-authorized fixed action when policy permits
+-> validate recovery
+-> close quietly or escalate with a precise reason
 ```
 
-Vardiel is the independent continuation of OpsPilot and is not a fork of Netiarius. Reference projects may inform design, but their source must not be copied without an explicit, license-compatible decision.
+Known recovery paths must not depend on a language-model or remote-control-plane round trip. A model may assist unknown diagnosis, but it never grants authority or invents executable operations.
+
+The current implementation is still bounded and read-only. Mutating behavior may be introduced only by focused issues that implement [ADR 0002](docs/adr/0002-fast-autonomous-linux-recovery.md), including standing authorization, typed actions, preconditions, locks, budgets, validation, cooldowns, circuit breakers, audit, and rollback or explicit non-rollback handling.
+
+Vardiel is the independent continuation of OpsPilot and is not a fork of Netiarius. Reference projects may inform design, but their source must not be copied without an explicit, license-compatible decision. Do not adopt arbitrary model-generated Python or shell execution.
 
 ## Maintainer and coding-agent roles
 
@@ -112,7 +115,7 @@ These constraints apply to product code, tests, examples, and documentation:
 
 - Do not add a product capability that executes arbitrary shell commands or model-generated code.
 - Model output, tool arguments, provider responses, remote API data, logs, files, and persisted case content are untrusted input.
-- Infrastructure tools remain read-only unless a later issue introduces deterministic policy evaluation, explicit approval, bounded execution, post-change validation, and rollback planning.
+- Current infrastructure tools remain read-only. A later issue may add a separate fixed action only with deterministic policy evaluation, explicit standing authorization or per-incident approval, bounded execution, post-change validation, audit, cooldown/circuit breaking, and rollback or an explicit non-rollback classification.
 - Validate every tool name and argument with strict schemas and semantic checks. Reject unknown fields, trailing JSON values, unsafe paths, unsupported methods, and ambiguous identifiers.
 - Do not expose raw provider or infrastructure error bodies, credentials, authorization data, environment values, kubeconfig contents, ServiceAccount tokens, private paths, or complete sensitive tool output through the model context, CLI, MCP, telemetry, case bundles, reports, or tests.
 - Preserve SSRF defenses, DNS re-resolution checks, redirect limits, TLS verification, fixed endpoint allowlists, response-byte limits, result-count limits, step budgets, timeouts, and cancellation.
@@ -128,13 +131,13 @@ When a known baseline limitation conflicts with a target invariant, preserve the
 Vardiel owns:
 
 - provider-neutral Agent Runtime and model adapters;
-- bounded tool packs and infrastructure adapters;
-- diagnostic orchestration, typed plans, playbooks, analyzers, evidence, findings, reports, and local case bundles;
-- policy metadata, non-executable action proposals, CLI, MCP, and machine-readable contracts.
+- the per-host event, incident, diagnosis, recovery, validation, and circuit-breaker state machine;
+- bounded observation tools and fixed typed action implementations;
+- versioned playbooks, standing-policy evaluation, sanitized local incident audit, CLI, MCP, and machine-readable contracts.
 
 Vardiel does not own:
 
-- host inventory, Ansible scheduling, web authentication, GitOps apply records, centralized persistence, or approval UI; those belong to Astralith;
+- fleet inventory, Ansible scheduling, web authentication, centralized policy distribution, notification delivery, GitOps apply records, centralized persistence, or approval UI; those belong to Astralith;
 - Alertmanager ingestion, Kubernetes CRDs, controller reconciliation, or controller-driven remediation; those belong to Kube-Sentinel.
 
 Integrate through explicit MCP, API, or JSON contracts rather than duplicating another project's control plane.
@@ -150,6 +153,9 @@ Integrate through explicit MCP, API, or JSON contracts rather than duplicating a
 - Built-in tools must strictly decode JSON, reject unknown fields and trailing values, perform semantic validation, and return bounded structured JSON.
 - Separate tool execution status from the observed health of the target system.
 - Findings and conclusions must cite valid evidence identifiers.
+- Prefer event-driven systemd, Journal, PSI, or kernel interfaces to tight polling for the local fast path.
+- Keep known recovery deterministic and independent of model/provider availability.
+- Fixed actions must recheck policy and preconditions under a per-target lock, enforce timeout and attempt budgets, validate health independently, and stop on cooldown or an open circuit breaker.
 - Prefer fixed argument builders and typed clients over shell strings.
 - Prefer the standard library. Add a dependency only when the issue justifies the risk and the pull request documents the choice.
 - Bound network calls, retries, concurrency, file reads, API bodies, collection sizes, and free-text fields.
@@ -165,7 +171,10 @@ Add focused tests for behavior changed by the issue. Where applicable, cover:
 - deterministic ordering and size/count limits;
 - secret, token, path, header, remote-error, and prompt-injection strings;
 - CLI, Agent Registry, MCP, telemetry, and storage exposure;
-- concurrency with the race detector.
+- concurrency with the race detector;
+- event deduplication, per-target serialization, retry/cooldown/circuit-breaker behavior, and crash-safe duplicate-action prevention;
+- policy denial, expiry, conflicting grants, unavailable authorization, rollback or explicit non-rollback handling, and failed post-action validation;
+- configured detection, action-start, and total-recovery deadlines without flaky production-performance claims.
 
 Use table-driven tests and deterministic local fakes or test servers. The default test suite must not require internet access, production infrastructure, real credentials, or a writable Docker/Kubernetes environment.
 

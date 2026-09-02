@@ -22,11 +22,32 @@ Examples include:
 - an SSRF, DNS rebinding, redirect, or unsafe target-validation bypass;
 - exposure of credentials, authorization headers, environment values, private paths, raw infrastructure errors, or sensitive tool output;
 - a privilege escalation or unauthorized mutating operation;
+- a bypass of standing policy, target allowlists, preconditions, action locks, attempt/concurrency budgets, cooldowns, circuit breakers, validation, or rollback handling;
+- action replay, duplicate recovery, cross-user or cross-host authorization confusion, or a model/provider response that can widen action authority;
 - path traversal, symlink escape, unsafe file permissions, or case-bundle disclosure;
 - a tool contract or protocol path that is falsely advertised as read-only;
 - a dependency or build-pipeline compromise with a credible impact on Vardiel users.
 
 A normal configuration question, unsupported environment, or public-data correctness bug may use the bug report form instead.
+
+## Autonomous-recovery security model
+
+Current released behavior is read-only. ADR 0002 permits later focused issues to
+add bounded local recovery, but it does not authorize arbitrary commands or make
+current CLI/MCP tools mutating.
+
+A future automatic action is authorized only by explicit administrator standing
+policy for the exact host or group, target, action, arguments, time window, and
+budgets. Model output, events, remote responses, and user prompts cannot create
+or widen that grant. The privileged executor must recheck authorization and
+preconditions under a per-target lock, bound attempts and concurrency, validate
+health independently, record a sanitized audit event, and stop on an open
+circuit breaker. Irreversible or broad operations remain human-gated.
+
+Successful recovery records should not expose raw Journal or application logs,
+credentials, environment values, private paths, complete command lines, or raw
+provider/systemd errors. A failure to notify a remote service must not cause the
+local daemon to repeat a mutating action.
 
 ## Private reporting
 

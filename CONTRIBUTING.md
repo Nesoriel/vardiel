@@ -25,7 +25,7 @@ Read:
 4. the assigned issue;
 5. relevant ADRs and `docs/architecture.md`.
 
-Vardiel deliberately separates responsibilities from Astralith and Kube-Sentinel. A proposal that duplicates their control-plane or controller responsibilities should be discussed before implementation.
+Vardiel deliberately separates responsibilities from Astralith and Kube-Sentinel. Vardiel owns the per-host incident and recovery loop; Astralith may own identity, inventory, fleet policy distribution, UI, and notification delivery; Kube-Sentinel owns Kubernetes controller remediation. A proposal that duplicates those control-plane or controller responsibilities should be discussed before implementation.
 
 ## Development setup
 
@@ -78,13 +78,15 @@ Vardiel is a security-sensitive Go application. Contributions should:
 - use strict JSON decoding and semantic validation;
 - keep output deterministic and bounded;
 - use typed clients or fixed argument builders instead of arbitrary shell strings;
+- keep known recovery paths deterministic and independent of model/provider availability;
+- use event-driven Linux/systemd interfaces instead of tight polling where available;
 - prefer the standard library unless a dependency materially reduces risk or implements an adopted integration.
 
-Product features that execute arbitrary model-controlled shell commands or code are not accepted. Read-only infrastructure access does not make the underlying credential, socket, or kubeconfig unprivileged.
+Product features that execute arbitrary model-controlled shell commands or code are not accepted. A mutating action requires an accepted focused issue and ADR 0002's fixed-action boundary: explicit standing or per-incident authorization, strict targets and arguments, preconditions, a per-target lock, bounded attempts and concurrency, independent validation, audit, cooldown/circuit breaking, and rollback or explicit non-rollback handling. Current CLI and MCP tools remain read-only unless a later contract explicitly says otherwise. Read-only infrastructure access does not make the underlying credential, socket, or kubeconfig unprivileged.
 
 ## Tests
 
-Add tests at the same abstraction level as the change. Relevant cases include success, unhealthy-but-successfully-observed state, malformed input, boundary values, timeout, cancellation, deterministic ordering, privacy, and failure paths.
+Add tests at the same abstraction level as the change. Relevant cases include success, unhealthy-but-successfully-observed state, malformed input, boundary values, timeout, cancellation, deterministic ordering, privacy, and failure paths. Recovery work must also cover event deduplication, policy denial/expiry/conflict, duplicate-action prevention, concurrency, failed validation, retry/cooldown/circuit breaking, crash recovery, and configured latency budgets.
 
 Prefer table-driven tests and local deterministic fakes or servers. The default suite must not require internet access, real credentials, or production systems.
 
