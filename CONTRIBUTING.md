@@ -25,7 +25,7 @@ Read:
 4. the assigned issue;
 5. relevant ADRs and `docs/architecture.md`.
 
-Vardiel deliberately separates responsibilities from Astralith and Kube-Sentinel. A proposal that duplicates their control-plane or controller responsibilities should be discussed before implementation.
+Vardiel deliberately separates responsibilities from Astralith and Kube-Sentinel. Vardiel owns the per-host incident and recovery loop; Astralith may own identity, inventory, fleet policy distribution, UI, and notification delivery; Kube-Sentinel owns Kubernetes controller remediation. A proposal that duplicates those control-plane or controller responsibilities should be discussed before implementation.
 
 ## Development setup
 
@@ -54,7 +54,16 @@ test/<issue-number>-<short-description>
 chore/<issue-number>-<short-description>
 ```
 
-Keep commits reviewable and use an imperative summary. Conventional prefixes such as `feat:`, `fix:`, `security:`, `docs:`, `test:`, `refactor:`, `ci:`, `build:`, and `chore:` are encouraged but not mechanically required.
+Make each commit one coherent, independently reviewable and revertible change,
+and use an imperative summary. Conventional prefixes such as `feat:`, `fix:`,
+`security:`, `docs:`, `test:`, `refactor:`, `ci:`, `build:`, and `chore:` are
+encouraged but not mechanically required.
+
+Within one accepted issue, prefer one pull request containing multiple atomic
+commits over several pull requests. When practical, finish and validate those
+commits locally and push them together so GitHub Actions does not run once per
+small edit. This does not permit unrelated issues in one pull request or skipping
+required validation.
 
 Do not:
 
@@ -78,13 +87,17 @@ Vardiel is a security-sensitive Go application. Contributions should:
 - use strict JSON decoding and semantic validation;
 - keep output deterministic and bounded;
 - use typed clients or fixed argument builders instead of arbitrary shell strings;
+- keep known recovery paths deterministic and independent of model/provider availability;
+- use event-driven Linux/systemd interfaces instead of tight polling where available;
 - prefer the standard library unless a dependency materially reduces risk or implements an adopted integration.
 
-Product features that execute arbitrary model-controlled shell commands or code are not accepted. Read-only infrastructure access does not make the underlying credential, socket, or kubeconfig unprivileged.
+Product features that execute arbitrary model-controlled shell commands or code are not accepted. A mutating action requires an accepted focused issue and ADR 0002's fixed-action boundary: explicit standing or per-incident authorization, strict targets and arguments, preconditions, a per-target lock, bounded attempts and concurrency, independent validation, audit, cooldown/circuit breaking, and rollback or explicit non-rollback handling. Current CLI and MCP tools remain read-only unless a later contract explicitly says otherwise. Read-only infrastructure access does not make the underlying credential, socket, or kubeconfig unprivileged.
+
+Operational knowledge contributions must be versioned, sanitized, source-attributed, and scoped to stable error signatures or documented environments. Manuals and runbooks are advisory: they may reference registered observations or playbooks, but they must not create executable commands, actions, targets, or policy grants. Never contribute production logs, environment values, secrets, private paths, or customer-specific identifiers.
 
 ## Tests
 
-Add tests at the same abstraction level as the change. Relevant cases include success, unhealthy-but-successfully-observed state, malformed input, boundary values, timeout, cancellation, deterministic ordering, privacy, and failure paths.
+Add tests at the same abstraction level as the change. Relevant cases include success, unhealthy-but-successfully-observed state, malformed input, boundary values, timeout, cancellation, deterministic ordering, privacy, and failure paths. Recovery work must also cover event deduplication, policy denial/expiry/conflict, duplicate-action prevention, concurrency, failed validation, retry/cooldown/circuit breaking, crash recovery, and configured latency budgets.
 
 Prefer table-driven tests and local deterministic fakes or servers. The default suite must not require internet access, real credentials, or production systems.
 
@@ -126,6 +139,9 @@ The contributor remains accountable for every submitted line and must:
 - verify licenses and source attribution;
 - run the applicable tests;
 - disclose material AI assistance in the pull request;
+- add a canonical `Co-authored-by: <agent name> <agent email>` trailer to every
+  commit materially authored with a coding agent, naming each participating
+  agent;
 - describe human verification performed;
 - avoid sending repository secrets, private infrastructure data, or undisclosed third-party code to an external model.
 

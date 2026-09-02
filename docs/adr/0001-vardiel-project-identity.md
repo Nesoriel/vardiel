@@ -4,6 +4,13 @@
 - Date: 2026-09-02
 - Decision owners: Nesoriel maintainers
 
+The identity, licensing, and repository-responsibility decisions in this ADR
+remain active. The read-only product definition and future-mutation approval
+model are superseded by
+[ADR 0002](0002-fast-autonomous-linux-recovery.md), which makes bounded,
+pre-authorized local recovery a product goal. Current shipped behavior remains
+read-only until later implementation issues deliver that goal.
+
 ## Context
 
 OpsPilot already contains a provider-neutral Go Agent Runtime, a shared typed tool registry, an Ark model adapter, an MCP stdio server, privacy-aware observability, and bounded read-only diagnostics for network, Docker, Kubernetes, Prometheus, and Loki.
@@ -30,11 +37,13 @@ Netiarius may be used as a design reference for:
 
 Netiarius source code will not be copied. Vardiel will not adopt arbitrary model-generated Python execution or in-process `exec()` as an execution model.
 
-### Product definition
+### Product definition (superseded)
 
-Vardiel is an evidence-driven operations diagnostic agent. It collects bounded structured observations through typed tools, applies deterministic analyzers, and uses language models to explain evidence, form hypotheses, and recommend next steps.
-
-The default behavior is read-only. Vardiel may produce reviewable action proposals, but state-changing operations are outside v0.1.
+This ADR originally defined Vardiel as an evidence-driven, read-only operations
+diagnostic agent. The current implementation still reflects that baseline.
+[ADR 0002](0002-fast-autonomous-linux-recovery.md) replaces the long-term
+product definition with a fast, low-interruption Linux recovery agent and makes
+one bounded, pre-authorized systemd recovery loop the v0.1 goal.
 
 ### Safety invariants
 
@@ -42,14 +51,14 @@ Vardiel will preserve these invariants:
 
 1. No arbitrary shell command interface.
 2. No model-generated code execution.
-3. Read-only defaults.
+3. Read-only observations by default; mutations only through ADR 0002's fixed, explicitly authorized action boundary.
 4. Model output and external data are untrusted.
 5. Strict schemas and semantic validation for tool calls.
 6. Bounded steps, timeouts, response sizes, and result counts.
 7. Public errors are stable and sanitized; internal causes do not cross public boundaries.
 8. Tool outputs are projected and redacted before reaching models or clients.
 9. Conclusions and findings are traceable to evidence identifiers.
-10. Future mutations require deterministic policy, explicit approval, validation, audit, and rollback planning.
+10. Future mutations require deterministic policy, explicit standing authorization or per-incident approval, validation, audit, and rollback or explicit non-rollback handling.
 
 ### Responsibility boundaries
 
@@ -58,11 +67,14 @@ Vardiel will preserve these invariants:
 Vardiel owns:
 
 - Agent Runtime and model-provider adapters
+- per-host event intake, incident state, recovery execution, and validation
 - diagnostic orchestration and typed plans
 - diagnostic playbooks
+- versioned operational knowledge for error, environment, and deployment diagnosis
 - evidence, findings, reports, and local case bundles
 - deterministic analyzers
 - bounded diagnostic tool packs
+- fixed typed actions and local standing-policy evaluation
 - MCP, CLI, and machine-readable integration contracts
 - policy metadata and action proposals
 
@@ -73,6 +85,7 @@ Astralith owns:
 - host inventory and host groups
 - Ansible Runner and scheduled remote execution
 - web UI, authentication, and centralized persistence
+- central policy distribution and notification delivery
 - GitOps desired state, diffs, and apply records
 - centralized approvals and audit presentation
 

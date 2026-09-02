@@ -112,5 +112,6 @@ Merge authorization:
 - [ ] Unrelated formatting, dependency, naming, and refactor changes are excluded.
 - [ ] Documentation and examples distinguish current behavior from roadmap work.
 - [ ] I reviewed generated changes and source attribution.
+- [ ] Every commit materially authored with a coding agent includes the required `Co-authored-by` trailer.
 - [ ] I did not commit secrets, production data, binaries, coverage output, or local configuration.
 - [ ] The branch, commits, pull-request state, CI result, and merge authority are reported accurately.

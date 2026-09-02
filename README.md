@@ -1,16 +1,19 @@
 # Vardiel
 
-Vardiel is a code-first, safety-oriented operations agent implemented in Go. Its core runtime stays provider-neutral while adapters integrate with the Volcengine AI ecosystem.
+Vardiel is a fast, low-interruption Linux incident-response agent implemented in Go. Its goal is to detect, diagnose, and safely recover common server failures locally, then notify an operator only when policy, risk, uncertainty, or failed validation requires attention.
 
-> Status: early development. The project includes a bounded Agent Runtime, an Ark Responses API adapter, an MCP stdio server, privacy-safe runtime events, optional OpenTelemetry tracing, and machine-readable, read-only network, Docker, Kubernetes, Prometheus, and Loki diagnostics.
+> Status: early development. Current code is still read-only and request-driven: it includes a bounded Agent Runtime, an Ark Responses API adapter, an MCP stdio server, privacy-safe runtime events, optional OpenTelemetry tracing, and machine-readable network, Docker, Kubernetes, Prometheus, and Loki diagnostics. The always-on daemon and automatic recovery loop described below are accepted direction, not implemented behavior.
 
 ## Design goals
 
-- Go-first runtime suitable for containers, Kubernetes, OpenClaw, Hermes, and other agents.
-- Volcengine Ark, VikingDB, AgentKit, and VKE integrations behind replaceable interfaces.
-- Read-only diagnostics by default; state-changing operations require explicit policy and approval.
-- Structured JSON inputs and outputs for reliable agent-to-tool communication.
-- Timeouts, step limits, tests, and observable execution rather than prompt-only safety.
+- Event-driven local detection and verified recovery with measurable deadlines.
+- A deterministic fast path for known failures with no model or control-plane round trip.
+- Fixed typed actions under explicit standing authorization, strict bounds, validation, audit, cooldowns, and circuit breakers.
+- Bounded model assistance for unknown incidents without model-generated shell, code, actions, or authority.
+- First-class error troubleshooting, environment failure recovery, and deployment troubleshooting.
+- Versioned local operations knowledge with deterministic matching before any semantic or vector retrieval.
+- One per-host runtime that works alone and can integrate with Astralith for fleet and multi-user coordination.
+- Structured, sanitized, deterministic contracts rather than prompt-only safety.
 
 ## Current capabilities
 
@@ -28,6 +31,42 @@ Vardiel is a code-first, safety-oriented operations agent implemented in Go. Its
 - JSONL lifecycle events with run IDs, step numbers, durations, and sanitized error classes.
 - Optional OTLP/HTTP traces for Agent runs, model calls, and tool executions.
 - Configuration validation and provider-error secret redaction.
+
+## Target recovery loop
+
+The target architecture uses two paths:
+
+```text
+Linux event
+-> deterministic incident correlation
+-> known playbook + standing policy
+-> fixed action
+-> independent health validation
+-> quiet close or precise escalation
+```
+
+Known recoveries stay local and do not call a model. Unknown incidents may use a
+bounded model to rank hypotheses or select from registered playbooks, but the
+same deterministic policy engine controls every action.
+
+The roadmap treats error troubleshooting, environment failures, and deployment
+troubleshooting as the three core incident families. Operations manuals, known
+error remedies, and deployment runbooks begin as repository-reviewed, versioned
+local Markdown entries matched by bounded metadata and stable signatures.
+Knowledge can explain or select an existing playbook; it cannot define an
+executable operation or grant authority.
+
+The first planned vertical slice is one explicitly allowlisted systemd service:
+observe a failed unit, collect minimal unit/listener/endpoint facts, perform one
+pre-authorized restart, validate stable health, close quietly on success, and
+send one bounded HTTPS webhook escalation on timeout, failed validation,
+exhausted attempts, or flapping. The target budgets are P95 event intake within
+1 second, approved action start within 5 seconds, and verified recovery or
+escalation within 30 seconds on the documented fixture.
+
+Read [ADR 0002](docs/adr/0002-fast-autonomous-linux-recovery.md), the
+[architecture](docs/architecture.md), and the [v0.1 scope](docs/v0.1-scope.md)
+for the exact authority and safety boundary.
 
 ## Toolchain
 
@@ -225,14 +264,19 @@ Private, loopback, link-local, multicast, and unspecified HTTP/TLS targets are b
 
 ## Roadmap
 
-The authoritative development sequence is maintained in [docs/development-roadmap.md](docs/development-roadmap.md), [docs/v0.1-scope.md](docs/v0.1-scope.md), and the [Vardiel v0.1 tracking issue](https://github.com/Nesoriel/vardiel/issues/22).
+The authoritative development sequence is maintained in [docs/development-roadmap.md](docs/development-roadmap.md), [docs/v0.1-scope.md](docs/v0.1-scope.md), and [ADR 0002](docs/adr/0002-fast-autonomous-linux-recovery.md). Tracking issue #22 must be rewritten after the direction reset in [issue #33](https://github.com/Nesoriel/vardiel/issues/33) is accepted.
 
 The immediate sequence is:
 
-1. safe public error boundary;
-2. Tool Contract v2;
-3. evidence records and local case bundles;
-4. Linux host diagnostics, analyzers, typed plans, and built-in playbooks;
-5. model portability and `v0.1.0` release preparation.
+1. accept and synchronize the autonomous Linux recovery direction;
+2. finish the narrowly scoped safe public error boundary;
+3. ship the `systemd-service-unavailable` daemon-to-validation vertical slice;
+4. establish the minimal local operations knowledge pack;
+5. harden local policy, privilege separation, crash recovery, audit, notification, and performance evidence;
+6. expand error, environment, and deployment playbooks one complete slice at a time;
+7. add bounded model reasoning and Astralith fleet integration after local recovery is proven.
 
-See [docs/architecture.md](docs/architecture.md) for current boundaries. Roadmap entries are plans, not implemented capabilities.
+The universal Tool Contract v2 and general case-bundle work are deferred until a
+working recovery slice proves which contracts are actually needed. See
+[docs/architecture.md](docs/architecture.md) for current and target boundaries.
+Roadmap entries are plans, not implemented capabilities.
