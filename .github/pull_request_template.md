@@ -79,6 +79,24 @@ Human review and verification performed:
 
 <!-- Do not include private prompts, chain-of-thought, credentials, or sensitive repository data. -->
 
+## Delivery state
+
+Task branch:
+
+Commits pushed:
+
+Pull request state:
+
+Required checks:
+
+Merge authorization:
+
+- [ ] Awaiting maintainer authorization.
+- [ ] Explicit maintainer authorization is recorded in the issue, current instruction, or pull-request conversation.
+- [ ] Merge completed through the protected pull-request path.
+
+<!-- CI success alone is not merge authorization. Do not use an integration or administrator bypass. -->
+
 ## Migration, rollout, and rollback
 
 <!-- Required for breaking, deployment, persistence, or mutation-related changes. Otherwise explain why not applicable. -->
@@ -95,3 +113,4 @@ Human review and verification performed:
 - [ ] Documentation and examples distinguish current behavior from roadmap work.
 - [ ] I reviewed generated changes and source attribution.
 - [ ] I did not commit secrets, production data, binaries, coverage output, or local configuration.
+- [ ] The branch, commits, pull-request state, CI result, and merge authority are reported accurately.

@@ -1,55 +1,128 @@
 # Codex execution workflow
 
-This document defines how maintainers prepare, run, review, and merge Codex tasks in Vardiel. Shared contribution rules live in `CONTRIBUTING.md`; repository-wide coding-agent constraints live in `AGENTS.md`.
+This document defines how maintainers direct Codex tasks and how Codex performs the mechanical delivery lifecycle in Vardiel. Shared contribution rules live in `CONTRIBUTING.md`; repository-wide coding-agent constraints live in `AGENTS.md`.
 
 ## Operating model
 
-Use this sequence for every implementation task:
+The maintainer is responsible for deciding what should be built, why it matters, the acceptable architecture and risk boundary, and whether a gated change may merge.
+
+Codex is responsible for carrying the assigned task through the normal repository workflow:
 
 ```text
-accepted issue
--> maintainer-created task branch
+accepted issue and direction
+-> inspect repository state
+-> prepare or select task branch
 -> plan
--> implementation and tests
--> focused pull request
--> CI and human review
--> merge
--> branch deletion
--> next issue
+-> implement and test
+-> commit and push
+-> open or update draft pull request
+-> monitor and fix CI
+-> respond to review
+-> mark ready
+-> merge only when explicitly authorized
+-> verify and clean up its task branch
 ```
 
-Do not combine roadmap items simply because they touch adjacent packages. The sequence keeps security boundaries, regressions, and migration effects reviewable.
+The maintainer should not have to switch branches, create routine task branches, write commits, push changes, or open pull requests merely to keep an assigned task moving.
 
 ## Before coding
 
 Codex must:
 
-1. confirm it is on the maintainer-supplied branch and not `main`;
+1. inspect the current branch, worktree, remotes, and upstream relationship;
 2. read `AGENTS.md`, `CONTRIBUTING.md`, and the assigned issue in full;
 3. read the relevant ADRs, architecture sections, roadmap, and v0.1 scope;
 4. inspect affected implementation, tests, public examples, and known issues;
-5. state a concise plan;
+5. state a concise implementation plan;
 6. identify contracts and safety boundaries that must remain unchanged;
-7. verify unstable SDK, protocol, and platform facts against official primary sources.
+7. verify unstable SDK, protocol, and platform facts against official primary sources;
+8. place the worktree on an appropriate task branch without discarding unknown work.
 
 If scope or instructions materially conflict, stop and ask rather than silently broadening the task.
 
-## Repository operations
+## Task-branch preparation
 
-Codex must not:
+A task branch named by the maintainer or issue is authoritative and may be used without another confirmation.
 
-- create, switch, rename, delete, or force-update branches unless the issue explicitly authorizes it;
-- push or commit directly to `main`;
-- use a GitHub App or integration ruleset bypass to avoid the pull request and required checks;
-- create tags, releases, or repository settings;
-- change remotes or rewrite shared history;
-- merge or enable auto-merge for its own security-sensitive work.
+Codex may perform the following standard preparation:
+
+- `git fetch origin`;
+- switch to an existing named local branch;
+- create a local tracking branch from an existing `origin/<task-branch>`;
+- create the named task branch from current `origin/main` when it does not exist;
+- when no branch is named, derive one using `<type>/<issue-number>-<short-slug>`;
+- set the upstream when first pushing;
+- fast-forward a branch that has no divergent work;
+- before first publication, rebase only its own unpushed local task commits onto current `origin/main`.
+
+Codex must stop rather than improvise when the worktree contains unrelated or unrecognized changes, commit ownership is unclear, checkout would overwrite files, published histories have diverged, or a conflict requires product, architecture, or security judgment.
+
+Do not use destructive cleanup to make preparation succeed. Unknown work must not be discarded, hidden, or overwritten. A named temporary stash is permitted only for clearly owned changes from the same assigned task, and it must be restored or removed before handoff.
+
+## Commits and pushes
+
+Codex is expected to make and push commits as part of completing a task.
+
+- Use small logical commits with imperative summaries; conventional prefixes are encouraged.
+- Commit only files within the assigned scope.
+- Amend the latest commit only while it is the agent's own unpushed work.
+- After a branch is pushed or reviewed, preserve history and use follow-up commits.
+- Push only the assigned task branch and set its upstream when necessary.
+- Never commit or push directly to `main`.
+- Never use a GitHub App, administrator, integration, or ruleset bypass to avoid the pull-request and required-check path.
+- Do not force-push a published or reviewed branch unless the maintainer explicitly authorizes that exact operation and reason.
+
+## Pull-request lifecycle
+
+Codex should own the routine pull-request workflow:
+
+1. open a draft pull request linked to the issue;
+2. keep the title and body synchronized with the actual implementation;
+3. push updates as focused commits;
+4. monitor required checks;
+5. inspect failed jobs and logs;
+6. correct failures that are within scope and push the fix;
+7. document skipped or unavailable checks honestly;
+8. mark the pull request ready when scope, tests, documentation, and validation are complete;
+9. respond to review feedback with additional commits without erasing prior review context.
+
+A draft pull request is preferred early for substantial work because it preserves CI and discussion context. Very small changes may open the pull request after the first complete commit, but they must still use the same protected review path.
+
+## Merge authority
+
+CI success is not merge authorization.
+
+Codex may merge its own task pull request only when all of the following are true:
+
+- the maintainer explicitly authorizes merge in the current instruction, assigned issue, or pull-request conversation;
+- required checks pass;
+- required review threads are resolved;
+- the pull request still matches the assigned scope;
+- no unresolved risk requires a maintainer decision;
+- the merge uses the protected pull-request path rather than a bypass.
+
+When merge is not explicitly authorized, Codex must stop at a review-ready pull request and provide a concise handoff.
+
+After an authorized merge, Codex may verify the resulting default-branch commit, confirm linked-issue state, and delete only the completed task branch. It must not clean up unrelated branches, tags, or releases.
+
+## Repository operations that still require explicit authorization
+
+Routine task delivery does not authorize Codex to:
+
+- change repository settings, rulesets, access controls, webhooks, secrets, or environments;
+- change remotes or repository ownership;
+- create or delete tags and releases;
+- delete, rename, or rewrite unrelated branches;
+- push to `main` or bypass protected-branch rules;
+- use `git reset --hard`, `git clean`, or destructive operations on unknown work;
+- force-push or rewrite shared history;
+- merge without explicit maintainer authorization.
 
 A technical permission is not project authorization.
 
 ## Scope rules
 
-- One issue maps to one branch and one pull request.
+- One issue maps to one focused branch and one pull request.
 - No drive-by refactors or unrelated formatting.
 - No dependency upgrade outside a dependency task.
 - No public rename outside an identity task.
@@ -107,16 +180,17 @@ go build ./cmd/vardiel
 
 If a check cannot run, state why and what remains unverified.
 
-## Pull request and review
+## Pull-request content
 
-Use `.github/pull_request_template.md`. The pull request must distinguish implemented behavior from future work and include scope, non-goals, contracts, security/privacy impact, tests, validation, AI assistance, and unresolved uncertainty.
+Use `.github/pull_request_template.md`. The pull request must distinguish implemented behavior from future work and include scope, non-goals, contracts, security/privacy impact, tests, validation, AI assistance, migration or rollback needs, and unresolved uncertainty.
 
-- Keep the pull request in draft while implementation or validation is incomplete.
-- Do not present an automated review as independent human approval.
-- Address comments with new commits rather than rewriting review history.
-- Re-run affected tests after review changes.
-- Prefer squash merge for focused task branches unless commit structure has durable value.
-- Delete the task branch after merge.
+The final handoff must also state:
+
+- branch and commit state;
+- pull-request URL and draft/ready state;
+- required-check status;
+- whether merge is authorized, completed, or awaiting the maintainer;
+- any repository operation intentionally not performed.
 
 ## Current implementation sequence
 

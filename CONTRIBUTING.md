@@ -46,23 +46,24 @@ Tests should run without external infrastructure. Some manual integrations requi
 Do not work directly on `main`. Use a focused branch such as:
 
 ```text
-fix/<short-description>
-feat/<short-description>
-security/<short-description>
-docs/<short-description>
-test/<short-description>
-chore/<short-description>
+fix/<issue-number>-<short-description>
+feat/<issue-number>-<short-description>
+security/<issue-number>-<short-description>
+docs/<issue-number>-<short-description>
+test/<issue-number>-<short-description>
+chore/<issue-number>-<short-description>
 ```
 
 Keep commits reviewable and use an imperative summary. Conventional prefixes such as `feat:`, `fix:`, `security:`, `docs:`, `test:`, `refactor:`, `ci:`, `build:`, and `chore:` are encouraged but not mechanically required.
 
 Do not:
 
-- force-push shared branches;
+- force-push shared or reviewed branches without explicit maintainer approval;
 - mix dependency upgrades with unrelated work;
 - reformat unrelated files;
 - commit generated binaries, coverage output, `.env` files, secrets, or production configuration;
-- create a compatibility layer without a documented migration need.
+- create a compatibility layer without a documented migration need;
+- discard or hide another contributor's unrecognized work.
 
 ## Coding standards
 
@@ -130,11 +131,21 @@ The contributor remains accountable for every submitted line and must:
 
 You do not need to publish private prompts or chain-of-thought. A concise statement of the tools used and the verification performed is sufficient.
 
+### Maintainer-delegated delivery automation
+
+Maintainers may delegate the normal mechanical repository workflow to a coding agent. Subject to `AGENTS.md`, an assigned agent may prepare the task branch, commit, push, open and update the pull request, monitor and fix CI, mark the pull request ready, and respond to review comments.
+
+This delegation is intentional: maintainers may focus on goals, architecture, risk, and acceptance rather than routine Git operations. The agent does not need a separate permission prompt for each ordinary branch, commit, push, or pull-request action when the task has been assigned.
+
+Delegation does not remove accountability or protected-branch gates. A coding agent must not push directly to `main`, bypass repository rules, discard unknown work, rewrite shared history without explicit approval, or self-authorize merge. Merge may be delegated only through an explicit maintainer instruction and only after required checks and review conditions pass.
+
 ## Review and merge
 
 Passing CI is necessary but not sufficient for a security-sensitive change. Maintainers review scope, architecture, threat boundaries, tests, and public contracts.
 
 Automated or AI review is advisory and is not independent human approval. Review threads must be resolved without erasing prior context. Focused branches are normally squash-merged and deleted after merge.
+
+When a maintainer explicitly delegates merge execution, the coding agent may perform the merge through the protected pull-request path, verify the resulting state, and delete only the completed task branch. Otherwise the agent should leave a review-ready pull request for the maintainer.
 
 ## Licensing
 
