@@ -1,0 +1,14 @@
+# Default maintainer for all repository changes.
+* @YangYuS8
+
+# Security-sensitive contracts and repository policy.
+/AGENTS.md @YangYuS8
+/CONTRIBUTING.md @YangYuS8
+/SECURITY.md @YangYuS8
+/CODE_OF_CONDUCT.md @YangYuS8
+/.github/ @YangYuS8
+/internal/agent/ @YangYuS8
+/internal/netguard/ @YangYuS8
+/internal/mcpserver/ @YangYuS8
+/internal/models/ @YangYuS8
+/deploy/ @YangYuS8

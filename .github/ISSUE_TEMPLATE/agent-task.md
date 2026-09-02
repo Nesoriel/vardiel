@@ -1,6 +1,6 @@
 ---
-name: Agent implementation task
-about: Define one focused Codex-ready engineering task
+name: Maintainer / Codex implementation task
+about: Define one accepted, focused, coding-agent-ready engineering task
 title: "[Agent Task] "
 labels: ""
 assignees: ""
@@ -8,23 +8,27 @@ assignees: ""
 
 ## Objective
 
-<!-- One concrete outcome. -->
+<!-- One concrete, observable outcome. -->
 
 ## User value
 
 <!-- Why this matters for Vardiel's daily-use diagnostic workflow. -->
 
-## Context
+## Current behavior and evidence
 
-<!-- Relevant current behavior, packages, ADRs, prior issues, or constraints. -->
+<!-- Relevant source locations, failing examples, contracts, issues, or research. -->
+
+## Prerequisites
+
+<!-- Issues or pull requests that must be merged first. -->
 
 ## In scope
 
-- 
+-
 
 ## Out of scope
 
-- 
+-
 
 ## Public contracts affected
 
@@ -32,42 +36,42 @@ assignees: ""
 
 ## Architecture constraints
 
-- Read `AGENTS.md`.
-- Read `docs/adr/0001-vardiel-project-identity.md`.
+- Read `AGENTS.md`, `CONTRIBUTING.md`, and the relevant ADRs.
 - Preserve provider-neutral boundaries in `internal/agent`.
 - Keep the task within Vardiel's responsibilities; do not duplicate Astralith or Kube-Sentinel.
+- Work on the maintainer-supplied branch and never push directly to `main`.
 
 ## Security and privacy invariants
 
-- No arbitrary shell or model-generated code execution.
+- No product capability for arbitrary shell or model-generated code execution.
 - Read-only by default.
 - Model and external data are untrusted.
 - Strict JSON and semantic validation.
-- Stable sanitized public errors.
-- No credentials, raw authorization data, raw remote error bodies, or complete sensitive output in public surfaces.
-- Preserve SSRF, redirect, TLS, fixed-endpoint, response-size, result-count, timeout, and redaction boundaries.
+- No new path that exposes credentials, raw authorization data, raw remote error bodies, or complete sensitive output.
+- Preserve SSRF, redirect, TLS, fixed-endpoint, response-size, result-count, timeout, cancellation, and redaction boundaries.
+- Record known pre-existing limitations rather than claiming they are already fixed.
 
 ## Required implementation
 
-- 
+-
 
 ## Required tests
 
-- normal success
-- expected unhealthy observation, when applicable
-- malformed and unknown input
-- boundary values
-- timeout and cancellation
-- deterministic ordering
-- privacy and secret-injection regression cases
-- Registry, CLI, Agent, and MCP exposure where applicable
+- normal success;
+- expected unhealthy observation, when applicable;
+- malformed, unknown, and trailing input;
+- semantic and size boundaries;
+- timeout and cancellation;
+- deterministic ordering;
+- privacy and secret-injection regression cases;
+- Registry, CLI, Agent, MCP, telemetry, or storage exposure where applicable.
 
 ## Acceptance criteria
 
-- [ ] 
+- [ ]
 - [ ] No unrelated dependency, naming, formatting, or refactor changes.
-- [ ] Documentation and examples match the implemented behavior.
-- [ ] Security and privacy impact is explained in the pull request.
+- [ ] Documentation and examples match implemented behavior.
+- [ ] Security, privacy, compatibility, and remaining uncertainty are explained in the pull request.
 
 ## Validation
 
@@ -81,12 +85,11 @@ go test -race -coverprofile=coverage.out ./...
 go build ./cmd/vardiel
 ```
 
-Use the pre-rename build path only during the dedicated identity migration task.
-
 ## Deliverables
 
-- implementation
-- tests
-- documentation or ADR updates when contracts change
-- focused pull request linked to this issue
-- exact validation results
+- implementation;
+- tests;
+- documentation or ADR updates when contracts change;
+- one focused pull request linked to this issue;
+- exact validation results and skipped checks;
+- concise AI-assistance and human-verification statement.
