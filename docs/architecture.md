@@ -42,6 +42,21 @@ systemd D-Bus / Journal / PSI / timers      Astralith
 Remote connectivity may improve a diagnosis, but loss of the network, model
 provider, or fleet plane must not prevent a local known recovery.
 
+## Core incident families
+
+- **Error troubleshooting:** match stable error codes or bounded signatures,
+  correlate the smallest relevant observations, and return a known remedy or a
+  precise unresolved diagnosis.
+- **Environment failures:** diagnose resource, dependency, configuration,
+  permission, network, DNS, and TLS differences through bounded projections;
+  raw environment values and secrets are never diagnostic inputs.
+- **Deployment troubleshooting:** correlate a bounded deployment marker such as
+  service, release identifier, timestamp, and result with a new regression.
+  Raw CI logs and deployment commands are not accepted as action input.
+
+Each incident family is implemented one typed playbook at a time. Classification
+does not imply that Vardiel is authorized to repair the condition.
+
 ## Performance budgets
 
 For the first supported `systemd-service-unavailable` fixture:
@@ -103,6 +118,25 @@ declares:
 Known playbooks execute without a model. A model may choose among registered
 playbooks for an unknown incident, but validation and policy remain
 deterministic.
+
+### Knowledge resolver
+
+The first knowledge source is a local, versioned set of repository-reviewed
+Markdown entries for operations manuals, known error remedies, and deployment
+runbooks. Each entry has bounded metadata for its identifier, version,
+applicability, signals, likely causes, registered observation or playbook IDs,
+validation expectations, and source provenance.
+
+Lookup starts with deterministic filters and exact error-code, signature, and
+tag matching, with bounded text search only as a fallback. Semantic or vector
+retrieval is not a prerequisite and is added only if fixture measurements show
+that the simpler lookup misses material cases.
+
+Knowledge content is untrusted advisory input. It cannot declare an executable
+command, tool, API path, action implementation, or policy grant. A referenced
+operation must already exist in the typed registry and still pass the policy,
+execution, validation, and privacy boundaries. Retrieved content is size-bounded
+and cited by knowledge identifier and version in diagnosis or escalation output.
 
 ### Policy engine
 

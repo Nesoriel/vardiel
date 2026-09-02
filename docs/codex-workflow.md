@@ -146,6 +146,8 @@ Answer these before implementation and again before review:
 9. Can a known recovery complete within its local deadline without a model or remote control plane?
 10. Does the change duplicate Astralith or Kube-Sentinel responsibilities?
 11. Does every failure mode remain safe, observable, cancellable, and testable?
+12. Can knowledge or deployment metadata introduce executable content, widen
+    authority, escape retrieval bounds, or appear without source provenance?
 
 Do not treat a written invariant as evidence that the existing code already implements it. Link known baseline gaps and avoid expanding them.
 

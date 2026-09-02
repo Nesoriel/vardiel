@@ -10,6 +10,8 @@ Vardiel is a fast, low-interruption Linux incident-response agent implemented in
 - A deterministic fast path for known failures with no model or control-plane round trip.
 - Fixed typed actions under explicit standing authorization, strict bounds, validation, audit, cooldowns, and circuit breakers.
 - Bounded model assistance for unknown incidents without model-generated shell, code, actions, or authority.
+- First-class error troubleshooting, environment failure recovery, and deployment troubleshooting.
+- Versioned local operations knowledge with deterministic matching before any semantic or vector retrieval.
 - One per-host runtime that works alone and can integrate with Astralith for fleet and multi-user coordination.
 - Structured, sanitized, deterministic contracts rather than prompt-only safety.
 
@@ -46,6 +48,13 @@ Linux event
 Known recoveries stay local and do not call a model. Unknown incidents may use a
 bounded model to rank hypotheses or select from registered playbooks, but the
 same deterministic policy engine controls every action.
+
+The roadmap treats error troubleshooting, environment failures, and deployment
+troubleshooting as the three core incident families. Operations manuals, known
+error remedies, and deployment runbooks begin as repository-reviewed, versioned
+local Markdown entries matched by bounded metadata and stable signatures.
+Knowledge can explain or select an existing playbook; it cannot define an
+executable operation or grant authority.
 
 The first planned vertical slice is one explicitly allowlisted systemd service:
 observe a failed unit, collect minimal unit/listener/endpoint facts, perform one
@@ -262,9 +271,10 @@ The immediate sequence is:
 1. accept and synchronize the autonomous Linux recovery direction;
 2. finish the narrowly scoped safe public error boundary;
 3. ship the `systemd-service-unavailable` daemon-to-validation vertical slice;
-4. harden local policy, privilege separation, crash recovery, audit, notification, and performance evidence;
-5. add new host recovery playbooks one complete slice at a time;
-6. add bounded model reasoning and Astralith fleet integration after local recovery is proven.
+4. establish the minimal local operations knowledge pack;
+5. harden local policy, privilege separation, crash recovery, audit, notification, and performance evidence;
+6. expand error, environment, and deployment playbooks one complete slice at a time;
+7. add bounded model reasoning and Astralith fleet integration after local recovery is proven.
 
 The universal Tool Contract v2 and general case-bundle work are deferred until a
 working recovery slice proves which contracts are actually needed. See

@@ -132,6 +132,12 @@ explicit standing authorization, a fixed restart action, health validation,
 cooldown/circuit breaking, sanitized audit, and quiet success. Known recovery
 must not require a model call.
 
+The roadmap's core incident families are error troubleshooting, environment
+failure recovery, and deployment troubleshooting. Planned operations manuals,
+known-error remedies, and deployment runbooks are versioned advisory knowledge;
+they cannot define an operation or grant authority. Semantic or vector retrieval
+is deferred until deterministic local matching has a measured recall gap.
+
 Until that implementation is merged, external agents must treat every current
 Vardiel tool as read-only. They must not synthesize shell commands, infer policy,
 or turn current observation results into an unapproved mutation.

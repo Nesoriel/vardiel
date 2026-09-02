@@ -20,6 +20,11 @@ Humans are notified only when authority, risk, confidence, validation, or
 recovery budgets require a decision. Known recovery must not depend on a model
 or remote control plane.
 
+The product grows along three core incident families: error troubleshooting,
+environment failure recovery, and deployment troubleshooting. New work is
+prioritized by measured incident frequency and recovery value, not by tool or
+integration count.
+
 ## Current baseline
 
 The repository currently provides:
@@ -67,6 +72,7 @@ the smallest complete loop:
 - one deduplicated incident state machine and per-target lock;
 - minimal bounded unit, listener, and endpoint observations collected in
   parallel where independent;
+- one local versioned knowledge entry matched by the stable unit failure class;
 - explicit standing policy for an allowlisted unit and one fixed restart action;
 - preconditions, timeout, attempt budget, cooldown, and circuit breaker;
 - post-action unit and endpoint validation;
@@ -80,7 +86,20 @@ the smallest complete loop:
 Do not begin with a generic workflow framework. Extract shared contracts only
 after this slice proves what must be shared.
 
-### 3. Harden the local recovery runtime
+### 3. Establish the minimal operational knowledge pack
+
+Store repository-reviewed operations manuals, known error remedies, and
+deployment runbooks as local versioned Markdown entries with bounded metadata,
+source provenance, and references to registered observation or playbook IDs.
+Start with deterministic scope, tag, error-code, and signature matching plus a
+bounded text-search fallback.
+
+Knowledge is advisory and untrusted. It cannot define executable commands or
+grant action authority. Measure lookup recall on sanitized incident fixtures
+before considering semantic retrieval, a vector database, or a remote knowledge
+service.
+
+### 4. Harden the local recovery runtime
 
 After the vertical slice works on a real Linux fixture:
 
@@ -92,13 +111,17 @@ After the vertical slice works on a real Linux fixture:
 - install, upgrade, rollback, and service-hardening documentation;
 - performance and soak tests for event bursts and flapping services.
 
-### 4. Add the next high-value playbooks
+### 5. Expand the three core incident families
 
 Add one vertical slice at a time, chosen from real incident frequency:
 
-1. host memory/CPU/I/O pressure using PSI and cgroup/systemd facts;
-2. filesystem or inode pressure with non-destructive diagnosis first;
-3. local web endpoint unavailable with DNS/TLS/listener/service correlation;
+1. error troubleshooting through stable error signatures, bounded log metadata,
+   service/dependency correlation, and cited known remedies;
+2. environment failures such as CPU/memory/I/O or filesystem pressure,
+   permissions, dependencies, DNS, TLS, and local endpoint differences;
+3. deployment troubleshooting through a sanitized release marker and
+   before/after service and endpoint observations, without automatic deployment
+   rollback until a separate fixed-action review;
 4. Docker container restart only after a separate socket-risk and action-policy
    review.
 
@@ -106,7 +129,7 @@ Each slice must include detection, observations, policy, action when safe,
 validation, cooldown/circuit breaking, notification behavior, and a real Linux
 fixture. Kubernetes mutations remain with Kube-Sentinel.
 
-### 5. Add bounded model reasoning for unknown incidents
+### 6. Add bounded model reasoning for unknown incidents
 
 Only after deterministic recovery is proven:
 
@@ -119,7 +142,7 @@ Only after deterministic recovery is proven:
 
 The model never grants authority and never emits executable shell or code.
 
-### 6. Add fleet and multi-user integration
+### 7. Add fleet and multi-user integration
 
 Integrate with Astralith for identity, host inventory, policy distribution,
 fleet correlation, notification delivery, UI, and centralized audit. Preserve
@@ -150,7 +173,8 @@ The following work is not on the critical path to the first recovery loop:
 
 - a universal Tool Contract v2 migration across every current adapter;
 - a general evidence/case-bundle storage system;
-- more model providers or vector retrieval;
+- more model providers, semantic retrieval, or a vector database before simple
+  knowledge lookup has a measured recall gap;
 - a large generated tool catalog;
 - remote SSH inventory or Ansible scheduling inside Vardiel;
 - a web UI or centralized authentication inside Vardiel;
@@ -170,8 +194,9 @@ restart action, validation, audit, circuit breaking, and quiet success.
 
 ### v0.2 — useful host coverage
 
-Resource pressure, filesystem pressure, and local endpoint playbooks; hardened
-privilege separation; notification delivery; real-host soak and recovery tests.
+Error-signature diagnosis, environment-pressure and local-endpoint playbooks,
+sanitized deployment correlation, a measured local knowledge pack, hardened
+privilege separation, and real-host soak and recovery tests.
 
 ### v0.3 — unknown incidents and fleets
 

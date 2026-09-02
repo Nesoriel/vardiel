@@ -84,6 +84,8 @@ Vardiel is a security-sensitive Go application. Contributions should:
 
 Product features that execute arbitrary model-controlled shell commands or code are not accepted. A mutating action requires an accepted focused issue and ADR 0002's fixed-action boundary: explicit standing or per-incident authorization, strict targets and arguments, preconditions, a per-target lock, bounded attempts and concurrency, independent validation, audit, cooldown/circuit breaking, and rollback or explicit non-rollback handling. Current CLI and MCP tools remain read-only unless a later contract explicitly says otherwise. Read-only infrastructure access does not make the underlying credential, socket, or kubeconfig unprivileged.
 
+Operational knowledge contributions must be versioned, sanitized, source-attributed, and scoped to stable error signatures or documented environments. Manuals and runbooks are advisory: they may reference registered observations or playbooks, but they must not create executable commands, actions, targets, or policy grants. Never contribute production logs, environment values, secrets, private paths, or customer-specific identifiers.
+
 ## Tests
 
 Add tests at the same abstraction level as the change. Relevant cases include success, unhealthy-but-successfully-observed state, malformed input, boundary values, timeout, cancellation, deterministic ordering, privacy, and failure paths. Recovery work must also cover event deduplication, policy denial/expiry/conflict, duplicate-action prevention, concurrency, failed validation, retry/cooldown/circuit breaking, crash recovery, and configured latency budgets.

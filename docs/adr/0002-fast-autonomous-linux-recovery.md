@@ -43,6 +43,24 @@ risk, confidence, or recovery budget does not permit autonomous completion.
 Current released code remains read-only. This ADR authorizes later focused
 issues to add bounded mutations; it does not itself change runtime behavior.
 
+### Core incident families
+
+The product roadmap centers on three related operator outcomes:
+
+- **error troubleshooting:** correlate stable error codes or bounded signatures
+  with service, dependency, and host observations, then select a known remedy or
+  produce a precise unresolved diagnosis;
+- **environment failure recovery:** identify resource pressure, dependency,
+  configuration, permission, network, DNS, and TLS differences without exposing
+  secrets or arbitrary environment values;
+- **deployment troubleshooting:** correlate a sanitized deployment marker with a
+  new service or endpoint regression, validate the current release state, and
+  recover only through separately authorized fixed actions.
+
+These are incident families, not permission grants. Each concrete diagnosis or
+repair still requires a focused, bounded playbook and its own accepted action
+scope.
+
 ### Two-speed incident loop
 
 Known incidents use a deterministic local fast path:
@@ -65,6 +83,22 @@ hypotheses, select from registered observations or playbooks, explain evidence,
 and recommend a typed action. It cannot create a tool, action, shell command,
 script, API path, or policy grant. The same policy engine controls execution no
 matter who selected the action.
+
+### Operational knowledge
+
+Vardiel may use a local, versioned knowledge pack for operations manuals, known
+error remedies, and deployment runbooks. Start with repository-reviewed Markdown
+entries and deterministic matching on explicit scope, tags, and stable error
+codes or signatures. Add semantic or vector retrieval only when measured fixture
+recall shows that bounded metadata and text search are insufficient.
+
+Every entry records a stable identifier and version, applicability, signals,
+likely causes, observation or playbook references, validation expectations, and
+source provenance. Knowledge text is untrusted advisory input: it cannot grant
+authority or define executable commands, tools, API paths, or actions. Runtime
+execution may reference only separately registered typed operations, and
+retrieved content remains subject to size, privacy, prompt-injection, and output
+boundaries.
 
 ### Per-host execution and fleet coordination
 
@@ -141,19 +175,22 @@ local host and one explicitly allowlisted service:
 1. observe the unit failure through systemd;
 2. create or update one deduplicated incident;
 3. collect bounded unit, listener, and health-check facts;
-4. evaluate standing authorization for a fixed systemd restart action;
-5. execute at most the configured number of attempts;
-6. validate unit and endpoint health;
-7. close quietly on success or stop and send one bounded escalation on failure
+4. match a versioned local knowledge entry for the stable failure class;
+5. evaluate standing authorization for a fixed systemd restart action;
+6. execute at most the configured number of attempts;
+7. validate unit and endpoint health;
+8. close quietly on success or stop and send one bounded escalation on failure
    or flapping.
 
 This vertical slice comes before a generic fleet platform, large tool catalog,
-RAG system, web UI, or universal case-store abstraction.
+remote or vector knowledge service, web UI, or universal case-store abstraction.
 
 ## Preserved invariants
 
 - No arbitrary shell interface or model-generated code execution.
 - Model output, logs, provider data, and remote responses remain untrusted.
+- Knowledge entries and deployment metadata remain untrusted and cannot add an
+  executable operation or widen standing authorization.
 - Current strict schemas, SSRF protection, TLS verification, fixed endpoint
   allowlists, redacted projections, byte/count limits, timeouts, cancellation,
   and protocol-stream boundaries remain in force.

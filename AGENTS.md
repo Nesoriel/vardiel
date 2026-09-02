@@ -30,6 +30,8 @@ detect locally
 
 Known recovery paths must not depend on a language-model or remote-control-plane round trip. A model may assist unknown diagnosis, but it never grants authority or invents executable operations.
 
+The core incident families are error troubleshooting, environment failure recovery, and deployment troubleshooting. Operational knowledge begins as repository-reviewed, versioned local Markdown with deterministic metadata and signature matching; semantic or vector retrieval requires measured need.
+
 The current implementation is still bounded and read-only. Mutating behavior may be introduced only by focused issues that implement [ADR 0002](docs/adr/0002-fast-autonomous-linux-recovery.md), including standing authorization, typed actions, preconditions, locks, budgets, validation, cooldowns, circuit breakers, audit, and rollback or explicit non-rollback handling.
 
 Vardiel is the independent continuation of OpsPilot and is not a fork of Netiarius. Reference projects may inform design, but their source must not be copied without an explicit, license-compatible decision. Do not adopt arbitrary model-generated Python or shell execution.
@@ -115,6 +117,7 @@ These constraints apply to product code, tests, examples, and documentation:
 
 - Do not add a product capability that executes arbitrary shell commands or model-generated code.
 - Model output, tool arguments, provider responses, remote API data, logs, files, and persisted case content are untrusted input.
+- Knowledge entries and deployment metadata are untrusted advisory input. They cannot define executable operations, introduce arbitrary commands or paths, or create or widen authorization.
 - Current infrastructure tools remain read-only. A later issue may add a separate fixed action only with deterministic policy evaluation, explicit standing authorization or per-incident approval, bounded execution, post-change validation, audit, cooldown/circuit breaking, and rollback or an explicit non-rollback classification.
 - Validate every tool name and argument with strict schemas and semantic checks. Reject unknown fields, trailing JSON values, unsafe paths, unsupported methods, and ambiguous identifiers.
 - Do not expose raw provider or infrastructure error bodies, credentials, authorization data, environment values, kubeconfig contents, ServiceAccount tokens, private paths, or complete sensitive tool output through the model context, CLI, MCP, telemetry, case bundles, reports, or tests.
@@ -133,7 +136,7 @@ Vardiel owns:
 - provider-neutral Agent Runtime and model adapters;
 - the per-host event, incident, diagnosis, recovery, validation, and circuit-breaker state machine;
 - bounded observation tools and fixed typed action implementations;
-- versioned playbooks, standing-policy evaluation, sanitized local incident audit, CLI, MCP, and machine-readable contracts.
+- versioned playbooks and operational knowledge, standing-policy evaluation, sanitized local incident audit, CLI, MCP, and machine-readable contracts.
 
 Vardiel does not own:
 
@@ -153,6 +156,7 @@ Integrate through explicit MCP, API, or JSON contracts rather than duplicating a
 - Built-in tools must strictly decode JSON, reject unknown fields and trailing values, perform semantic validation, and return bounded structured JSON.
 - Separate tool execution status from the observed health of the target system.
 - Findings and conclusions must cite valid evidence identifiers.
+- Knowledge-derived diagnoses must cite the entry identifier and version; lookup and retrieved content must be deterministic, bounded, and privacy-safe.
 - Prefer event-driven systemd, Journal, PSI, or kernel interfaces to tight polling for the local fast path.
 - Keep known recovery deterministic and independent of model/provider availability.
 - Fixed actions must recheck policy and preconditions under a per-target lock, enforce timeout and attempt budgets, validate health independently, and stop on cooldown or an open circuit breaker.
@@ -170,6 +174,7 @@ Add focused tests for behavior changed by the issue. Where applicable, cover:
 - timeout, cancellation, unavailable dependencies, and permission failures;
 - deterministic ordering and size/count limits;
 - secret, token, path, header, remote-error, and prompt-injection strings;
+- poisoned or ambiguous knowledge entries and deployment metadata that attempt to add actions or authority;
 - CLI, Agent Registry, MCP, telemetry, and storage exposure;
 - concurrency with the race detector;
 - event deduplication, per-target serialization, retry/cooldown/circuit-breaker behavior, and crash-safe duplicate-action prevention;

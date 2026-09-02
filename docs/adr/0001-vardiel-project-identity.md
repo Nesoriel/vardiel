@@ -70,6 +70,7 @@ Vardiel owns:
 - per-host event intake, incident state, recovery execution, and validation
 - diagnostic orchestration and typed plans
 - diagnostic playbooks
+- versioned operational knowledge for error, environment, and deployment diagnosis
 - evidence, findings, reports, and local case bundles
 - deterministic analyzers
 - bounded diagnostic tool packs

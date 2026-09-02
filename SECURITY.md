@@ -24,6 +24,7 @@ Examples include:
 - a privilege escalation or unauthorized mutating operation;
 - a bypass of standing policy, target allowlists, preconditions, action locks, attempt/concurrency budgets, cooldowns, circuit breakers, validation, or rollback handling;
 - action replay, duplicate recovery, cross-user or cross-host authorization confusion, or a model/provider response that can widen action authority;
+- a poisoned knowledge entry or deployment marker that can introduce an operation, widen authority, bypass validation, or expose private data;
 - path traversal, symlink escape, unsafe file permissions, or case-bundle disclosure;
 - a tool contract or protocol path that is falsely advertised as read-only;
 - a dependency or build-pipeline compromise with a credible impact on Vardiel users.
@@ -48,6 +49,12 @@ Successful recovery records should not expose raw Journal or application logs,
 credentials, environment values, private paths, complete command lines, or raw
 provider/systemd errors. A failure to notify a remote service must not cause the
 local daemon to repeat a mutating action.
+
+Operations manuals, known-error remedies, deployment runbooks, and deployment
+metadata are untrusted advisory inputs. Runtime lookup is bounded and
+provenance-aware; retrieved text cannot create executable operations, targets,
+or policy grants, and every referenced action still passes the normal typed
+registry, authorization, execution, and validation boundaries.
 
 ## Private reporting
 
