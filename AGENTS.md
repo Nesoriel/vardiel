@@ -8,7 +8,7 @@ This root file applies to the entire repository. A more deeply nested `AGENTS.md
 
 Use this precedence when repository instructions differ:
 
-1. the explicit task and assigned GitHub issue define the requested outcome and scope;
+1. the explicit maintainer request and assigned GitHub issue define the requested outcome, scope, task branch, and completion authority;
 2. the nearest applicable `AGENTS.md` defines implementation constraints;
 3. accepted ADRs and `docs/architecture.md` define architectural boundaries;
 4. `CONTRIBUTING.md` defines the shared contributor workflow;
@@ -31,18 +31,78 @@ collect structured evidence
 
 Vardiel is the independent continuation of OpsPilot and is not a fork of Netiarius. Reference projects may inform design, but their source must not be copied without an explicit, license-compatible decision.
 
+## Delegated repository work
+
+The maintainer intends coding agents to complete routine repository work, not merely edit files. Assigning an issue or an explicit implementation task grants **standard task delegation** unless the maintainer narrows it.
+
+Standard task delegation authorizes the coding agent to:
+
+- inspect the current worktree, branch, remotes, and ahead/behind state;
+- fetch current refs from `origin`;
+- switch to the explicitly assigned existing task branch;
+- create a local tracking branch for an already-existing `origin/<task-branch>`;
+- when no task branch exists, create and push one deterministic issue branch from current `origin/main`;
+- fast-forward a local task branch to its upstream when histories have not diverged;
+- implement the assigned scope and add tests and documentation;
+- create clear commits containing only its task changes;
+- push the task branch;
+- open and update a draft pull request linked to the issue;
+- mark the pull request ready after implementation and required validation are complete;
+- respond to review feedback with additional commits and update the pull request description.
+
+Branch selection order is:
+
+1. a branch explicitly named by the maintainer;
+2. a branch named in the assigned issue;
+3. an existing branch clearly linked to the issue;
+4. otherwise, a deterministic new branch using `<type>/<issue-number>-<short-slug>`, where type is one of `security`, `fix`, `feat`, `docs`, `test`, `ci`, `build`, `refactor`, or `chore`.
+
+A stale or obsolete current branch is not a reason to stop when the worktree can be safely aligned to the assigned task branch.
+
+Before changing branches, inspect at least:
+
+```bash
+git status --short --branch
+git remote -v
+git log --oneline --decorate -n 5
+```
+
+Do not overwrite or discard unrelated work. Stop and report the exact condition when:
+
+- the worktree contains changes not created for the current task and checkout may affect them;
+- the current branch contains unpushed commits of unknown ownership;
+- the assigned remote branch is missing when the task requires that exact existing branch;
+- local and remote task-branch histories have diverged;
+- checkout or fast-forward would overwrite files;
+- repository access is insufficient for the required routine operation.
+
+Do not use `git reset --hard`, `git clean`, force push, or history rewriting to make alignment succeed. Do not automatically stash unknown or pre-existing work. A coding agent may use a named stash only for changes it created during the current task, and it must restore or remove that stash before handoff.
+
+**Completion delegation** is separate from standard task delegation. A coding agent may merge a pull request, close the linked issue, and delete the completed task branch only when the maintainer or assigned issue explicitly authorizes completion through merge. Merge authorization is valid only after required checks pass, required review threads are resolved, the branch is current under repository rules, and no unresolved risk requires maintainer judgment.
+
+Routine task delegation never authorizes:
+
+- direct commits or pushes to `main`;
+- use of a GitHub App or integration ruleset bypass;
+- force push or rewriting shared history;
+- deletion or renaming of unrelated branches;
+- changing remotes, repository settings, rulesets, secrets, permissions, or visibility;
+- creating tags or releases unless the task explicitly covers release work;
+- approving the agent's own pull request or representing automated analysis as independent human approval.
+
+A technical capability is not permission for destructive or administrative work, but routine Git and pull-request operations are expected parts of an assigned implementation task.
+
 ## Required preflight
 
 Before editing:
 
-1. confirm the task branch and do not work on `main`;
-2. read the assigned issue in full;
-3. read this file, `CONTRIBUTING.md`, the relevant ADRs, and the affected architecture sections;
-4. inspect the current implementation, tests, public examples, and known follow-up issues;
-5. state a concise plan, affected contracts, and safety boundaries;
-6. verify unstable SDK, protocol, and platform facts against official primary sources.
-
-Work on the branch supplied by the maintainer. Do not create, switch, rename, delete, or force-update branches; create tags or releases; change remotes; or modify repository settings unless the assigned issue explicitly authorizes that operation.
+1. identify the assigned issue and branch under the delegation rules above;
+2. safely align the worktree to the task branch and confirm it is not `main`;
+3. read the assigned issue in full;
+4. read this file, `CONTRIBUTING.md`, the relevant ADRs, and affected architecture sections;
+5. inspect the current implementation, tests, public examples, and known follow-up issues;
+6. state a concise plan, affected contracts, and safety boundaries;
+7. verify unstable SDK, protocol, and platform facts against official primary sources.
 
 ## Change discipline
 
@@ -51,7 +111,7 @@ Work on the branch supplied by the maintainer. Do not create, switch, rename, de
 - Do not add compatibility layers without a documented user or integration need.
 - Preserve public contracts unless the issue explicitly authorizes a breaking change.
 - Update documentation, examples, schemas, and migration notes when public behavior changes.
-- Prefer small, reviewable commits. Never rewrite shared history or force-push.
+- Prefer small, reviewable commits. Do not rewrite shared history after a branch has been pushed or reviewed.
 - Do not commit credentials, `.env` files, local case data, coverage output, binaries, editor state, or production configuration.
 - Do not describe roadmap work as implemented behavior.
 
@@ -67,7 +127,7 @@ These constraints apply to product code, tests, examples, and documentation:
 - Preserve SSRF defenses, DNS re-resolution checks, redirect limits, TLS verification, fixed endpoint allowlists, response-byte limits, result-count limits, step budgets, timeouts, and cancellation.
 - Do not expose arbitrary infrastructure API paths, HTTP methods, PromQL, LogQL, Kubernetes resource types or selectors, Docker endpoints, or filesystem paths as model-controlled arguments.
 - Keep protocol streams clean. MCP stdio uses stdout only for protocol frames.
-- Treat Docker sockets, kubeconfigs, tokens, and local control sockets as privileged capabilities even when the exposed operations are read-only.
+- Treat Docker sockets, kubeconfigs, tokens, and local control sockets as privileged capabilities even when exposed operations are read-only.
 - Never weaken a boundary merely to make a test pass.
 
 When a known baseline limitation conflicts with a target invariant, preserve the limitation's tracking issue, avoid extending it, and fix it only in the issue assigned for that purpose.
@@ -132,15 +192,17 @@ go build ./cmd/vardiel
 
 Do not claim a command passed unless it was actually executed. If a check cannot run, state exactly why and what remains unverified.
 
-## GitHub and pull request behavior
+## Pull request lifecycle
 
-- Never push directly to `main`, even when an integration token has a technical ruleset bypass.
-- Open one pull request linked to the assigned issue and use `.github/pull_request_template.md`.
-- Keep a pull request in draft until scope and tests are complete.
-- Do not enable auto-merge or merge security-sensitive work without human review.
-- Address review comments with additional commits; do not erase review context by rewriting shared history.
+Under standard task delegation, the coding agent is expected to commit, push, open or update the pull request, keep its description accurate, and push review fixes without asking the maintainer to perform routine Git steps.
+
+- Link the pull request to the assigned issue and use `.github/pull_request_template.md`.
+- Keep the pull request in draft while scope, implementation, or validation is incomplete.
+- Mark it ready when the required work and checks are complete.
 - Re-run affected tests after review changes.
-- Do not approve your own work or present automated analysis as independent human review.
+- Preserve review context by adding commits rather than force-pushing rewritten history.
+- Do not enable auto-merge unless completion delegation explicitly permits it.
+- Merge and remote task-branch deletion follow the completion-delegation rules above.
 
 ## Completion handoff
 
@@ -151,6 +213,8 @@ The final handoff and pull request description must include:
 - security, privacy, and compatibility impact;
 - tests added or updated;
 - exact validation commands and concise results;
-- skipped checks, unresolved uncertainty, and follow-up issues.
+- skipped checks, unresolved uncertainty, and follow-up issues;
+- commit, pull-request, CI, and merge state;
+- material AI assistance and the human verification still required.
 
 Human contribution and conduct guidance lives in `CONTRIBUTING.md` and `CODE_OF_CONDUCT.md`. Vulnerabilities must follow `SECURITY.md`.

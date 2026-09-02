@@ -56,13 +56,16 @@ chore/<short-description>
 
 Keep commits reviewable and use an imperative summary. Conventional prefixes such as `feat:`, `fix:`, `security:`, `docs:`, `test:`, `refactor:`, `ci:`, `build:`, and `chore:` are encouraged but not mechanically required.
 
+For maintainer-assigned Codex work, routine branch preparation, commits, pushes, pull-request creation, and review-fix pushes may be delegated to the coding agent under `AGENTS.md` and `docs/codex-workflow.md`. Contributors should not be required to perform those mechanical steps manually when the agent can do them safely.
+
 Do not:
 
-- force-push shared branches;
+- force-push shared review history;
 - mix dependency upgrades with unrelated work;
 - reformat unrelated files;
 - commit generated binaries, coverage output, `.env` files, secrets, or production configuration;
-- create a compatibility layer without a documented migration need.
+- create a compatibility layer without a documented migration need;
+- use a ruleset bypass or direct `main` push as a substitute for review.
 
 ## Coding standards
 
@@ -115,6 +118,8 @@ Open one focused pull request per issue and complete the repository template. A 
 
 Keep the pull request in draft while behavior or validation is incomplete. Maintainers may request that a large change be split before review.
 
+A coding agent operating under standard task delegation is expected to commit, push, open or update the pull request, and address review feedback itself. Merge remains subject to repository rules and the explicit completion authority defined in the issue or maintainer instruction.
+
 ## AI-assisted contributions
 
 AI-assisted development is welcome when it improves the contribution rather than replacing contributor responsibility.
@@ -128,6 +133,8 @@ The contributor remains accountable for every submitted line and must:
 - describe human verification performed;
 - avoid sending repository secrets, private infrastructure data, or undisclosed third-party code to an external model.
 
+Coding agents may perform the routine Git and GitHub lifecycle described in `AGENTS.md`, including safe branch alignment or creation, commits, pushes, pull-request creation, and follow-up commits. This delegation does not permit branch-protection bypass, destructive cleanup, repository administration, or unreviewed merge.
+
 You do not need to publish private prompts or chain-of-thought. A concise statement of the tools used and the verification performed is sufficient.
 
 ## Review and merge
@@ -135,6 +142,8 @@ You do not need to publish private prompts or chain-of-thought. A concise statem
 Passing CI is necessary but not sufficient for a security-sensitive change. Maintainers review scope, architecture, threat boundaries, tests, and public contracts.
 
 Automated or AI review is advisory and is not independent human approval. Review threads must be resolved without erasing prior context. Focused branches are normally squash-merged and deleted after merge.
+
+When the maintainer explicitly delegates completion through merge, a coding agent may perform the merge and branch cleanup after required checks pass and review conditions are satisfied. It must report the final merge state rather than silently assuming success.
 
 ## Licensing
 

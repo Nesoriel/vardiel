@@ -22,6 +22,25 @@ assignees: ""
 
 <!-- Issues or pull requests that must be merged first. -->
 
+## Task branch
+
+<!-- Optional. When omitted, Codex may create <type>/<issue-number>-<short-slug> from current origin/main. -->
+
+```text
+
+```
+
+## Repository delegation
+
+Standard delegation is granted by assigning this task. Codex may safely prepare or create the task branch, commit its changes, push the branch, open or update a draft pull request, mark it ready after validation, and push review fixes.
+
+Completion through merge:
+
+- [ ] Not delegated; stop after the pull request is ready for maintainer review.
+- [ ] Delegated; after required checks pass and review conditions are satisfied, Codex may merge, close the linked issue, delete the completed task branch, and report post-merge status.
+
+Neither option authorizes direct `main` pushes, ruleset bypass, force push, destructive cleanup, repository settings, tags, or releases unless separately stated.
+
 ## In scope
 
 -
@@ -39,7 +58,7 @@ assignees: ""
 - Read `AGENTS.md`, `CONTRIBUTING.md`, and the relevant ADRs.
 - Preserve provider-neutral boundaries in `internal/agent`.
 - Keep the task within Vardiel's responsibilities; do not duplicate Astralith or Kube-Sentinel.
-- Work on the maintainer-supplied branch and never push directly to `main`.
+- Follow the task-branch and delegation rules above; never push directly to `main` or use a ruleset bypass.
 
 ## Security and privacy invariants
 
@@ -69,6 +88,7 @@ assignees: ""
 ## Acceptance criteria
 
 - [ ]
+- [ ] Codex completed the authorized routine Git and pull-request lifecycle without asking the maintainer to perform mechanical steps.
 - [ ] No unrelated dependency, naming, formatting, or refactor changes.
 - [ ] Documentation and examples match implemented behavior.
 - [ ] Security, privacy, compatibility, and remaining uncertainty are explained in the pull request.
@@ -92,4 +112,5 @@ go build ./cmd/vardiel
 - documentation or ADR updates when contracts change;
 - one focused pull request linked to this issue;
 - exact validation results and skipped checks;
-- concise AI-assistance and human-verification statement.
+- concise AI-assistance and human-verification statement;
+- final branch, commit, pull-request, CI, and merge state.
